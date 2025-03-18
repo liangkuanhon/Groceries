@@ -8,33 +8,44 @@
     android:background="@drawable/groceries_background"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="WELCOME!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.039" />
 
-    <!--To view your groups -->
+    <!-- TextView for "WELCOME!" -->
+    <TextView
+        android:id="@+id/welcome_textview"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="WELCOME!"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.498"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.039" />
+
     <Button
         android:id="@+id/yourgroups_button"
-        android:layout_width="197dp"
-        android:layout_height="61dp"
+        android:layout_width="360dp"
+        android:layout_height="120dp"
         android:text="Your Groups"
-        tools:layout_editor_absoluteX="107dp"
-        tools:layout_editor_absoluteY="105dp" />
+        android:textSize="48sp"
+        android:ellipsize="end"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/welcome_textview"
+        android:layout_marginTop="50dp"/>
 
-    <!--LOGOUT button -->
+    <!-- Logout Button -->
     <Button
         android:id="@+id/logout_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Logout"
-        android:layout_centerInParent="true" />
-
+        android:textSize="48sp"
+        android:ellipsize="end"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/yourgroups_button"
+        app:layout_constraintVertical_bias="0.0"
+        android:layout_marginTop="50dp" /> <!-- This should create space between the buttons -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
