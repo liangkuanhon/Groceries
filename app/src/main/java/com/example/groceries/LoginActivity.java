@@ -25,6 +25,8 @@ import android.util.Log;
 
 import java.util.Objects;
 
+import android.content.SharedPreferences; //so they don't need to login everytime
+
 public class LoginActivity extends AppCompatActivity {
 
     EditText login_email, login_password;
@@ -51,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!ValidEmail() | !ValidPassword()){
+                if(!ValidEmail() | !ValidPassword()){
 
                 } else {
                     checkUser();
@@ -67,6 +69,23 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Check if user is already logged in
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String userEmail = sharedPreferences.getString("email", null);
+
+        if (userEmail != null) {
+            // If the user is already logged in, skip LoginActivity and go to MainActivity
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish(); // Prevent going back to LoginActivity
+        }
+    }
+
 
     public Boolean ValidEmail(){
         String email = login_email.getText().toString();
@@ -99,17 +118,27 @@ public class LoginActivity extends AppCompatActivity {
 
         checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot){
-
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     login_email.setError(null);
                     for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                        String passwordfromDB = userSnapshot.child("password").getValue(String.class);
+                        String passwordFromDB = userSnapshot.child("password").getValue(String.class);
+                        String usernameFromDB = userSnapshot.child("username").getValue(String.class);
 
-                        if (passwordfromDB != null && passwordfromDB.equals(userPassword)) {
+                        if (passwordFromDB != null && passwordFromDB.equals(userPassword)) {
                             login_email.setError(null);
+
+                            // Save user data in SharedPreferences
+                            SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("email", userEmail); // Save email
+                            editor.putString("username", usernameFromDB); // Save username
+                            editor.putBoolean("isLoggedIn", true); // Mark user as logged in
+                            editor.apply();
+
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
+                            finish(); // Prevent user from coming back to login
                         } else {
                             login_password.setError("Wrong Password");
                             login_password.requestFocus();
@@ -126,6 +155,6 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
-
     }
+
 }
