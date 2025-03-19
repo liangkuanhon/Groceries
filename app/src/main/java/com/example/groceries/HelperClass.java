@@ -2,7 +2,7 @@ package com.example.groceries;
 
 public class HelperClass {
 
-    String email, username, password;
+    String email, username, password, name;
 
     public HelperClass(){
     }
@@ -29,5 +29,11 @@ public class HelperClass {
         this.password = password;
     }
 
+    public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 }

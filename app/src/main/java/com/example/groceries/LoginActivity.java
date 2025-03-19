@@ -171,22 +171,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void validateUser(DataSnapshot snapshot, String userPassword) {
-        /*String passwordFromDB = snapshot.child("password").getValue(String.class);
-
-        if (passwordFromDB != null && passwordFromDB.equals(userPassword)) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-        } else {
-            // Wrong password
-            login_password.setError("Wrong Password");
-            login_password.requestFocus();
-        }*/
-        // Check if the snapshot represents a single user node (for checkUsername)
         if (snapshot.hasChild("password")) {
-            // Single user node (checkUsername case)
+            // (checkUsername case)
             String passwordFromDB = snapshot.child("password").getValue(String.class);
             if (passwordFromDB != null && passwordFromDB.equals(userPassword)) {
-                // Password matches, login successful
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
             } else {
@@ -195,14 +183,13 @@ public class LoginActivity extends AppCompatActivity {
                 login_password.requestFocus();
             }
         } else {
-            // Multiple user nodes (checkEmail case)
+            // (checkEmail case)
             for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                 String passwordFromDB = userSnapshot.child("password").getValue(String.class);
                 if (passwordFromDB != null && passwordFromDB.equals(userPassword)) {
-                    // Password matches, login successful
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
-                    return; // Exit the method after successful login
+                    finish();
                 }
             }
             // If no matching password is found
@@ -210,5 +197,4 @@ public class LoginActivity extends AppCompatActivity {
             login_password.requestFocus();
         }
     }
-
 }

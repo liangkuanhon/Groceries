@@ -57,8 +57,5 @@ public class MainActivity extends AppCompatActivity {
         finish(); // Close MainActivity to prevent the user from returning to it
     }
 
-    public void yourGroupsView(){
-
-    }
 
 }

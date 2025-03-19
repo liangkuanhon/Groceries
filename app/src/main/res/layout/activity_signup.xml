@@ -6,7 +6,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:gravity="center"
     android:background="@drawable/groceries_background"
     tools:context=".SignupActivity">
@@ -47,7 +46,7 @@
                 android:id="@+id/signup_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sign Up"
+                android:text="@string/signup"
                 android:textAlignment="center"
                 android:textColor="@color/teal"
                 android:textSize="36sp"
@@ -60,7 +59,8 @@
                 android:background="@drawable/teal_border"
                 android:layout_marginTop="10dp"
                 android:padding="15dp"
-                android:hint="Email"/>
+                android:hint="@string/email"
+                android:singleLine="true"/>
 
             <EditText
                 android:id="@+id/signup_username"
@@ -69,7 +69,8 @@
                 android:background="@drawable/teal_border"
                 android:layout_marginTop="15dp"
                 android:padding="15dp"
-                android:hint="Username"/>
+                android:hint="@string/username"
+                android:singleLine="true"/>
 
             <EditText
                 android:id="@+id/signup_password"
@@ -77,8 +78,9 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/teal_border"
-                android:hint="Password"
-                android:padding="15dp" />
+                android:hint="@string/password"
+                android:padding="15dp"
+                android:singleLine="true"/>
 
             <EditText
                 android:id="@+id/signup_reconfirm_password"
@@ -86,8 +88,9 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/teal_border"
-                android:hint="Reconfirm Password"
-                android:padding="15dp" />
+                android:hint="@string/reconfirm"
+                android:padding="15dp"
+                android:singleLine="true"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/signup_button"
@@ -95,7 +98,7 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
                 android:padding="5dp"
-                android:text="SIGN UP"
+                android:text="@string/signup"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:backgroundTint="@color/slimy_green"

@@ -5,16 +5,16 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/groceries_background"
+    android:background="@color/white"
     tools:context=".MainActivity">
 
 
     <!-- TextView for "WELCOME!" -->
     <TextView
-        android:id="@+id/welcome_textview"
+    android:id="@+id/welcome_textview"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="WELCOME!"
+    android:text="Hi"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintHorizontal_bias="0.498"

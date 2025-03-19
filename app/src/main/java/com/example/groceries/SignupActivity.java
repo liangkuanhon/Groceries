@@ -106,12 +106,28 @@ public class SignupActivity extends AppCompatActivity {
                             signup_username.setError("Username is already taken");
                             signup_username.requestFocus();
                         } else {
-                            HelperClass helperClass = new HelperClass(email, username, password);
-                            reference.child(username).setValue(helperClass);
+                            reference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        signup_email.setError("Email is already registered");
+                                        signup_email.requestFocus();
+                                    } else {
+                                        HelperClass helperClass = new HelperClass(email, username, password);
+                                        reference.child(username).setValue(helperClass);
 
-                            Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                            startActivity(intent);
+                                        Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(SignupActivity.this, NameActivity.class);
+                                        intent.putExtra("USERNAME", username);
+                                        startActivity(intent);
+                                    }
+                                }
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    // Handle possible errors.
+                                    Toast.makeText(SignupActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
                     }
 
@@ -126,3 +142,4 @@ public class SignupActivity extends AppCompatActivity {
 
     }
 }
+// check latest push
