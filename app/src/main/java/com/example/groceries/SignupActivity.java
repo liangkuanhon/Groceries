@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import android.content.Intent;
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -13,10 +14,16 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.firebase.Firebase;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -25,11 +32,12 @@ import com.google.firebase.database.ValueEventListener;
 
 public class SignupActivity extends AppCompatActivity {
 
-    EditText signup_email, signup_username, signup_password, signup_reconfirm_password;
-    TextView signup_title;
-    MaterialButton signup_button;
-    FirebaseDatabase database;
-    DatabaseReference reference;
+    private EditText signup_email, signup_username, signup_password, signup_reconfirm_password;
+    private TextView signup_title;
+    private MaterialButton signup_button;
+    private FirebaseAuth auth;
+    private FirebaseDatabase database;
+    private DatabaseReference reference;
 
 
     @Override
@@ -43,6 +51,7 @@ public class SignupActivity extends AppCompatActivity {
             return insets;
         });
 
+        auth = FirebaseAuth.getInstance();
         signup_email = findViewById(R.id.signup_email);
         signup_password = findViewById(R.id.signup_password);
         signup_username = findViewById(R.id.signup_username);
@@ -90,14 +99,20 @@ public class SignupActivity extends AppCompatActivity {
                     return;
                 }
 
+                // Check Password Length >= 6
+                if (password.length() < 6) {
+                    signup_password.setError("Password must be at least 6 characters long");
+                    signup_password.requestFocus();
+                    return;
+                }
+
                 // Check if password matches
                 if (!password.equals(reconfirm_password)){
                     signup_reconfirm_password.setError("Passwords do not match!");
                     signup_reconfirm_password.requestFocus();
-                    return;
                 }
 
-                // Check if username exist in database
+                //Check if username exist in database
                 reference.child(username).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -106,15 +121,26 @@ public class SignupActivity extends AppCompatActivity {
                             signup_username.setError("Username is already taken");
                             signup_username.requestFocus();
                         } else {
-                            HelperClass helperClass = new HelperClass(email, username, password);
-                            reference.child(username).setValue(helperClass);
+                            // Firebase Authentication
+                            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        HelperClass helperClass = new HelperClass(email, username, password);
+                                        reference.child(username).setValue(helperClass);
 
-                            Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                            startActivity(intent);
+                                        Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(SignupActivity.this, NameActivity.class);
+                                        intent.putExtra("USERNAME", username);
+                                        startActivity(intent);
+                                    } else {
+                                        Toast.makeText(SignupActivity.this, "Signup failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                            });
                         }
                     }
-
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                         Toast.makeText(SignupActivity.this, "Failed to check username availability", Toast.LENGTH_SHORT).show();
@@ -122,7 +148,5 @@ public class SignupActivity extends AppCompatActivity {
                 });
             }
         });
-
-
     }
 }

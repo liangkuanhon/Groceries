@@ -1,3 +1,19 @@
 <resources>
+    <!-- string resources login activity -->
     <string name="app_name">Groceries</string>
+    <string name="email_or_user">Email or Username</string>
+    <string name="password">Password</string>
+    <string name="login">LOG IN</string>
+    <string name="signup">SIGN UP</string>
+
+    <!-- string resources signup activity -->
+    <string name="email">Email</string>
+    <string name="username">Username</string>
+    <string name="reconfirm">Reconfirm Password</string>
+
+    <!-- string resources name activity -->
+    <string name="next">NEXT</string>
+    <string name="name_string1">Choose Name</string>
+    <string name="name_string2">You can always change it later</string>
+    <string name="name">Name</string>
 </resources>
