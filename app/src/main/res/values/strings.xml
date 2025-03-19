@@ -19,5 +19,8 @@
 
     <!-- string resources name activity -->
     <string name="hi">Hi</string>
+    <string name="enter_group_name">enter_group_name</string>
+    <string name="create_group">Create Group</string>
+    <string name="group_name">Group Name</string>
 
 </resources>
