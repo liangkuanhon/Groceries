@@ -16,6 +16,8 @@
     <string name="name_string1">Choose Name</string>
     <string name="name_string2">You can always change it later</string>
     <string name="name">Name</string>
-    <string name="create_group">Create Group</string>
-    <string name="enter_group_name">Enter group name</string>
+
+    <!-- string resources name activity -->
+    <string name="hi">Hi</string>
+
 </resources>

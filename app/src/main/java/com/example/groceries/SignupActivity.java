@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.google.firebase.Firebase;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -121,22 +122,46 @@ public class SignupActivity extends AppCompatActivity {
                             signup_username.setError("Username is already taken");
                             signup_username.requestFocus();
                         } else {
+
                             // Firebase Authentication
                             auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        HelperClass helperClass = new HelperClass(email, username, password);
-                                        reference.child(username).setValue(helperClass);
+                                        FirebaseUser user = auth.getCurrentUser();
+                                        if (user != null) {
+                                            String uid = user.getUid();
 
-                                        Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(SignupActivity.this, NameActivity.class);
-                                        intent.putExtra("USERNAME", username);
-                                        startActivity(intent);
+                                            // Create a user object
+                                            HelperClass newUser = new HelperClass(email, username, password);
+
+                                            // Add the user to the database
+                                            FirebaseHelper.addUser(uid, newUser, (error, ref) -> {
+                                                if (error == null) {
+                                                    Toast.makeText(SignupActivity.this, "User registered successfully!", Toast.LENGTH_SHORT).show();
+                                                    Intent intent = new Intent(SignupActivity.this, NameActivity.class);
+                                                    intent.putExtra("UID", uid);
+                                                    startActivity(intent);
+                                                } else {
+                                                    Toast.makeText(SignupActivity.this, "Failed to register user: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        }
                                     } else {
-                                        Toast.makeText(SignupActivity.this, "Signup failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(SignupActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                     }
+
                                 }
+//                                        HelperClass helperClass = new HelperClass(email, username);
+//                                        reference.child(username).setValue(helperClass);
+//
+//                                        Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
+//                                        Intent intent = new Intent(SignupActivity.this, NameActivity.class);
+//                                        intent.putExtra("USERNAME", username);
+//                                        startActivity(intent);
+//                                    } else {
+//                                        Toast.makeText(SignupActivity.this, "Signup failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+//                                    }
 
                             });
                         }
