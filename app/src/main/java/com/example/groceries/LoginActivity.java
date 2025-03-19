@@ -3,6 +3,7 @@ package com.example.groceries;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -22,6 +23,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.Objects;
 
@@ -29,7 +31,7 @@ import android.content.SharedPreferences; //so they don't need to login everytim
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText login_email, login_password;
+    EditText login_input, login_password;
     MaterialButton login_button, signup_button;
     FirebaseDatabase database;
     DatabaseReference reference;
@@ -45,19 +47,17 @@ public class LoginActivity extends AppCompatActivity {
             return insets;
         });
 
-        login_email = findViewById(R.id.login_email);
+        login_input = findViewById(R.id.login_input);
         login_password = findViewById(R.id.login_password);
         login_button = findViewById(R.id.login_button);
         signup_button = findViewById(R.id.signup_button);
 
-        login_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!ValidEmail() | !ValidPassword()){
 
-                } else {
-                    checkUser();
-                }
+      
+        login_button.setOnClickListener(view -> {
+            if (ValidInput() && ValidPassword()) {
+                checkUser();
+
             }
         });
 
@@ -69,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
 
     @Override
     protected void onStart() {
@@ -87,13 +88,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    public Boolean ValidEmail(){
-        String email = login_email.getText().toString();
-        if (email.isEmpty()){
-            login_email.setError("Email cannot be empty");
+    public Boolean ValidInput(){
+        String input = login_input.getText().toString();
+        if (input.isEmpty()){
+            login_input.setError("Input cannot be empty");
+            login_input.requestFocus();
             return false;
-        } else {
-            login_email.setError(null);
+        }else {
+            login_input.setError(null);
             return true;
         }
     }
@@ -102,51 +104,36 @@ public class LoginActivity extends AppCompatActivity {
         String password = login_password.getText().toString();
         if (password.isEmpty()){
             login_password.setError("Password cannot be empty");
+            login_password.requestFocus();
             return false;
         } else {
-            login_email.setError(null);
+            login_password.setError(null);
             return true;
         }
     }
 
-    public void checkUser(){
-        String userEmail = login_email.getText().toString().trim();
+    public void checkUser() {
+        String userInput = login_input.getText().toString().trim();
         String userPassword = login_password.getText().toString().trim();
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-        Query checkUserDatabase = reference.orderByChild("email").equalTo(userEmail);
+        if (isValidEmail(userInput)) {
+            checkEmail(reference, userInput, userPassword);
+        } else {
+            checkUsername(reference, userInput, userPassword);
+        }
+    }
 
-        checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void checkEmail(DatabaseReference reference, String email, String password){
+        Query emailQuery = reference.orderByChild("email").equalTo(email);
+        emailQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    login_email.setError(null);
-                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                        String passwordFromDB = userSnapshot.child("password").getValue(String.class);
-                        String usernameFromDB = userSnapshot.child("username").getValue(String.class);
-
-                        if (passwordFromDB != null && passwordFromDB.equals(userPassword)) {
-                            login_email.setError(null);
-
-                            // Save user data in SharedPreferences
-                            SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("email", userEmail); // Save email
-                            editor.putString("username", usernameFromDB); // Save username
-                            editor.putBoolean("isLoggedIn", true); // Mark user as logged in
-                            editor.apply();
-
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish(); // Prevent user from coming back to login
-                        } else {
-                            login_password.setError("Wrong Password");
-                            login_password.requestFocus();
-                        }
-                    }
+                if (snapshot.exists()) {
+                    validateUser(snapshot, password);
                 } else {
-                    login_email.setError("Account does not exist. Please create an account");
-                    login_email.requestFocus();
+                    login_input.setError("Account does not exist. Please create an account");
+                    login_input.requestFocus();
                 }
             }
 
@@ -155,6 +142,73 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+
+    }
+
+    private void checkUsername(DatabaseReference reference, String username, String password) {
+        DatabaseReference usernameRef = reference.child(username);
+        usernameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    validateUser(snapshot, password);
+                } else {
+                    login_input.setError("Account does not exist. Please create an account");
+                    login_input.requestFocus();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle database errors
+                Toast.makeText(LoginActivity.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("LoginActivity", "Database error: " + error.getMessage());
+            }
+        });
+    }
+
+    private boolean isValidEmail(String input) {
+        return Patterns.EMAIL_ADDRESS.matcher(input).matches();
+    }
+
+    private void validateUser(DataSnapshot snapshot, String userPassword) {
+        /*String passwordFromDB = snapshot.child("password").getValue(String.class);
+
+        if (passwordFromDB != null && passwordFromDB.equals(userPassword)) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+        } else {
+            // Wrong password
+            login_password.setError("Wrong Password");
+            login_password.requestFocus();
+        }*/
+        // Check if the snapshot represents a single user node (for checkUsername)
+        if (snapshot.hasChild("password")) {
+            // Single user node (checkUsername case)
+            String passwordFromDB = snapshot.child("password").getValue(String.class);
+            if (passwordFromDB != null && passwordFromDB.equals(userPassword)) {
+                // Password matches, login successful
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+            } else {
+                // Wrong password
+                login_password.setError("Wrong Password");
+                login_password.requestFocus();
+            }
+        } else {
+            // Multiple user nodes (checkEmail case)
+            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                String passwordFromDB = userSnapshot.child("password").getValue(String.class);
+                if (passwordFromDB != null && passwordFromDB.equals(userPassword)) {
+                    // Password matches, login successful
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    return; // Exit the method after successful login
+                }
+            }
+            // If no matching password is found
+            login_password.setError("Wrong Password");
+            login_password.requestFocus();
+        }
     }
 
 }

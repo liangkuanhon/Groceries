@@ -44,7 +44,7 @@
             android:background="@drawable/teal_border">
 
             <EditText
-                android:id="@+id/login_email"
+                android:id="@+id/login_input"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@drawable/teal_border"
