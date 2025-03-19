@@ -36,8 +36,6 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private EditText login_input, login_password;
     private MaterialButton login_button, signup_button;
-    private FirebaseDatabase database;
-    private DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +54,11 @@ public class LoginActivity extends AppCompatActivity {
         login_button = findViewById(R.id.login_button);
         signup_button = findViewById(R.id.signup_button);
 
+
+      
         login_button.setOnClickListener(view -> {
             if (ValidInput() && ValidPassword()) {
+
                 String input = login_input.getText().toString().trim();
                 String password = login_password.getText().toString().trim();
 
@@ -76,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
+
 
     private boolean isValidEmail(String input) {
         return Patterns.EMAIL_ADDRESS.matcher(input).matches();
@@ -131,20 +133,22 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginWithUsername(String username, String password) {
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(username);
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseHelper.checkUsernameExists(username, new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    // Retrieve the email from the user node
-                    String emailFromDB = snapshot.child("email").getValue(String.class);
-                    if (emailFromDB != null) {
-                        // Use the email to log in
-                        loginWithEmail(emailFromDB, password);
-                    } else {
-                        Toast.makeText(LoginActivity.this, "No email found for this username", Toast.LENGTH_SHORT).show();
+                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                        String usernameFromDB = userSnapshot.child("username").getValue(String.class);
+                        if (username.equals(usernameFromDB)) {
+                            // Retrieve the email associated with this username
+                            String emailFromDB = userSnapshot.child("email").getValue(String.class);
+                            if (emailFromDB != null) {
+                                // Use the email to log in
+                                loginWithEmail(emailFromDB, password);
+                                return; // Exit the loop once the user is found
+                            }
+                        }
                     }
-                } else {
                     Toast.makeText(LoginActivity.this, "Username does not exist", Toast.LENGTH_SHORT).show();
                 }
             }
