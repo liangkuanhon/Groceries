@@ -22,8 +22,6 @@ public class NameActivity extends AppCompatActivity {
     EditText name;
     TextView heading, subtitle;
     MaterialButton nextButton;
-    FirebaseDatabase database;
-    DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +39,12 @@ public class NameActivity extends AppCompatActivity {
         subtitle = findViewById(R.id.subtitle);
         nextButton = findViewById(R.id.next_button);
 
-        String username = getIntent().getStringExtra("USERNAME");
+        // Get uid from intent
+        String uid = getIntent().getStringExtra("UID");
 
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                database = FirebaseDatabase.getInstance();
-                reference = database.getReference("users");
 
                 String setname = name.getText().toString();
 
@@ -56,8 +53,9 @@ public class NameActivity extends AppCompatActivity {
                     name.setError("Name is required");
                     name.requestFocus();
                 } else {
-                    reference.child(username).child("name").setValue(setname);
+                    FirebaseHelper.updateName(uid, setname);
                     Intent intent = new Intent(NameActivity.this, MainActivity.class);
+                    intent.putExtra("UID", uid);
                     startActivity(intent);
                 }
             }
