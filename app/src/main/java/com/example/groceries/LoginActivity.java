@@ -27,6 +27,8 @@ import android.widget.Toast;
 
 import java.util.Objects;
 
+import android.content.SharedPreferences; //so they don't need to login everytime
+
 public class LoginActivity extends AppCompatActivity {
 
     EditText login_input, login_password;
@@ -50,9 +52,12 @@ public class LoginActivity extends AppCompatActivity {
         login_button = findViewById(R.id.login_button);
         signup_button = findViewById(R.id.signup_button);
 
+
+      
         login_button.setOnClickListener(view -> {
             if (ValidInput() && ValidPassword()) {
                 checkUser();
+
             }
         });
 
@@ -64,6 +69,24 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Check if user is already logged in
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String userEmail = sharedPreferences.getString("email", null);
+
+        if (userEmail != null) {
+            // If the user is already logged in, skip LoginActivity and go to MainActivity
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish(); // Prevent going back to LoginActivity
+        }
+    }
+
 
     public Boolean ValidInput(){
         String input = login_input.getText().toString();
@@ -94,7 +117,6 @@ public class LoginActivity extends AppCompatActivity {
         String userPassword = login_password.getText().toString().trim();
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-
         if (isValidEmail(userInput)) {
             checkEmail(reference, userInput, userPassword);
         } else {
@@ -120,6 +142,7 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
     private void checkUsername(DatabaseReference reference, String username, String password) {
@@ -187,4 +210,5 @@ public class LoginActivity extends AppCompatActivity {
             login_password.requestFocus();
         }
     }
+
 }
