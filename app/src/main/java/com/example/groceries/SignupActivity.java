@@ -121,6 +121,7 @@ public class SignupActivity extends AppCompatActivity {
                             signup_username.setError("Username is already taken");
                             signup_username.requestFocus();
                         } else {
+
                             // Firebase Authentication
                             auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                 @Override
@@ -137,7 +138,6 @@ public class SignupActivity extends AppCompatActivity {
                                         Toast.makeText(SignupActivity.this, "Signup failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 }
-
                             });
                         }
                     }

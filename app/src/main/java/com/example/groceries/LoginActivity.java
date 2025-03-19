@@ -56,8 +56,11 @@ public class LoginActivity extends AppCompatActivity {
         login_button = findViewById(R.id.login_button);
         signup_button = findViewById(R.id.signup_button);
 
+
+      
         login_button.setOnClickListener(view -> {
             if (ValidInput() && ValidPassword()) {
+
                 String input = login_input.getText().toString().trim();
                 String password = login_password.getText().toString().trim();
 
@@ -76,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
+
 
     private boolean isValidEmail(String input) {
         return Patterns.EMAIL_ADDRESS.matcher(input).matches();
