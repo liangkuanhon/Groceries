@@ -13,4 +13,20 @@
     <color name="teal">#48AAAD</color>
     <color name="slimy_green">#299617</color>
     <color name="slimy_purple">#831796</color>
+
+    <!-- Colour template for app -->
+    <!-- Base UI -->
+    <color name="navy_blue">#2C3E50</color>
+    <color name="soft_gray">#F5F5F5</color>
+    <color name="dark_gray">#7F8C8D</color>
+    <color name="deep_blue">#2C3E50</color>
+    <color name="light_greyish_blue">#B0BEC5</color>
+
+    <!-- For highlights -->
+    <color name="bright_teal">#1ABC9C</color>
+    <color name="lime_green">#27AE60</color>
+    <color name="muted_blue">#3498DB</color>
+    <color name="soft_orange">#E67E22</color>
+    <color name="muted_gray">#7F8C8D</color>
+
 </resources>

@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@drawable/groceries_background"
+    android:background="@color/soft_gray"
     tools:context=".LoginActivity">
 
     <ImageView
@@ -23,12 +23,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/login_tagline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="11dp"
+        android:text="@string/tagline"
+        android:textSize="20sp"
+        android:textStyle="italic|bold"
+        android:textColor="@color/muted_gray"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@id/layout"
+        app:layout_constraintTop_toBottomOf="@+id/login_logo" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp"
-        app:layout_constraintTop_toBottomOf="@id/login_logo"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        app:layout_constraintTop_toBottomOf="@id/login_tagline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:cardCornerRadius="30dp"
@@ -41,16 +56,17 @@
             android:orientation="vertical"
             android:layout_gravity="center_horizontal"
             android:padding="24dp"
-            android:background="@drawable/teal_border">
+            android:background="@drawable/muted_border">
 
             <EditText
                 android:id="@+id/login_input"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/teal_border"
+                android:background="@drawable/muted_border"
                 android:layout_marginTop="25dp"
                 android:padding="15dp"
                 android:hint="@string/email_or_user"
+                android:textColorHint="@color/light_greyish_blue"
                 android:singleLine="true"/>
 
             <EditText
@@ -58,8 +74,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="25dp"
-                android:background="@drawable/teal_border"
+                android:background="@drawable/muted_border"
                 android:hint="@string/password"
+                android:textColorHint="@color/light_greyish_blue"
                 android:padding="15dp"
                 android:singleLine="true"/>
 
@@ -72,7 +89,7 @@
                 android:text="@string/login"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:backgroundTint="@color/slimy_green"
+                android:backgroundTint="@color/bright_teal"
                 app:cornerRadius="5dp"
                 style="@style/Widget.MaterialComponents.Button"/>
 
@@ -93,7 +110,7 @@
                 android:text="@string/signup"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:backgroundTint="@color/slimy_purple"
+                android:backgroundTint="@color/soft_orange"
                 app:cornerRadius="5dp"
                 style="@style/Widget.MaterialComponents.Button"/>
 

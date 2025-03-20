@@ -10,6 +10,7 @@
     <string name="email">Email</string>
     <string name="username">Username</string>
     <string name="reconfirm">Reconfirm Password</string>
+    <string name="tagline">Nest Your Cart. List Your Heart.</string>
 
     <!-- string resources name activity -->
     <string name="next">NEXT</string>
@@ -19,5 +20,16 @@
 
     <!-- string resources name activity -->
     <string name="hi">Hi</string>
+    <string name="welcome">Welcome Back</string>
+    <string name="search">Search...</string>
+
+    <!-- string resources main activity -->
+    <string name="my_groups">My Groups</string>
+    <string name="my_stores">My Stores</string>
+    <string name="my_items">Items for you</string>
+    <string name="home">Home</string>
+    <string name="activity">Activities</string>
+    <string name="message">Messages</string>
+    <string name="profile">Profile</string>
 
 </resources>
