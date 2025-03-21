@@ -116,9 +116,10 @@ public class SignupActivity extends AppCompatActivity {
                 }
 
                 //Check if username exist in database
-                reference.child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+                FirebaseHelper.checkUsernameExists(username, new ValueEventListener(){
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+                        //String usernameFromDB = dataSnapshot.child("username").getValue(String.class);
                         if (dataSnapshot.exists()) {
                             // Username already exists
                             signup_username.setError("Username is already taken");
@@ -154,16 +155,6 @@ public class SignupActivity extends AppCompatActivity {
                                     }
 
                                 }
-//                                        HelperClass helperClass = new HelperClass(email, username);
-//                                        reference.child(username).setValue(helperClass);
-//
-//                                        Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
-//                                        Intent intent = new Intent(SignupActivity.this, NameActivity.class);
-//                                        intent.putExtra("USERNAME", username);
-//                                        startActivity(intent);
-//                                    } else {
-//                                        Toast.makeText(SignupActivity.this, "Signup failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-//                                    }
 
                             });
                         }

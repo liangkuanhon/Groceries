@@ -10,6 +10,7 @@
     <string name="email">Email</string>
     <string name="username">Username</string>
     <string name="reconfirm">Reconfirm Password</string>
+    <string name="tagline">Nest Your Cart. List Your Heart.</string>
 
     <!-- string resources name activity -->
     <string name="next">NEXT</string>

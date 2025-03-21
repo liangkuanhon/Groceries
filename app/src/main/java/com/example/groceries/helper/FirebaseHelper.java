@@ -42,7 +42,7 @@ public class FirebaseHelper {
 
     // Check if username exists
     public static void checkUsernameExists(String username, ValueEventListener listener) {
-        reference.orderByChild("username").addListenerForSingleValueEvent(listener);
+        reference.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(listener);
     }
 
     // Check if email exists

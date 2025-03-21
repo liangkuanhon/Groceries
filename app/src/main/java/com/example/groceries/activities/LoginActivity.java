@@ -134,6 +134,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
+                    boolean userFound = false;
                     for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                         String usernameFromDB = userSnapshot.child("username").getValue(String.class);
                         if (username.equals(usernameFromDB)) {
@@ -142,11 +143,19 @@ public class LoginActivity extends AppCompatActivity {
                             if (emailFromDB != null) {
                                 // Use the email to log in
                                 loginWithEmail(emailFromDB, password);
-                                return; // Exit the loop once the user is found
+                                userFound = true;
+                                break; // Exit the loop once the user is found
                             }
                         }
                     }
-                    Toast.makeText(LoginActivity.this, "Username does not exist", Toast.LENGTH_SHORT).show();
+                    if (!userFound) {
+                        login_input.setError("Username does not exist");
+                        login_input.requestFocus();
+                    }
+                } else {
+                    // If the snapshot does not exist at all
+                    login_input.setError("Username does not exist");
+                    login_input.requestFocus();
                 }
             }
 
