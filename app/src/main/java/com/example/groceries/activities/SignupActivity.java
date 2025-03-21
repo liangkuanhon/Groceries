@@ -1,4 +1,4 @@
-package com.example.groceries;
+package com.example.groceries.activities;
 
 import android.os.Bundle;
 
@@ -15,13 +15,15 @@ import android.util.Patterns;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.groceries.R;
+import com.example.groceries.helper.FirebaseHelper;
+import com.example.groceries.helper.HelperClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

@@ -1,4 +1,4 @@
-package com.example.groceries;
+package com.example.groceries.helper;
 
 public class HelperClass {
 

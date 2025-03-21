@@ -1,7 +1,9 @@
-package com.example.groceries;
+package com.example.groceries.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.example.groceries.R;
 
 public class GroupActivity extends AppCompatActivity {
     @Override
