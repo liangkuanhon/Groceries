@@ -1,4 +1,4 @@
-package com.example.groceries;
+package com.example.groceries.helper;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,7 +42,7 @@ public class FirebaseHelper {
 
     // Check if username exists
     public static void checkUsernameExists(String username, ValueEventListener listener) {
-        reference.orderByChild("username").addListenerForSingleValueEvent(listener);
+        reference.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(listener);
     }
 
     // Check if email exists
@@ -54,7 +54,6 @@ public class FirebaseHelper {
     public static void checkNameExists(String name, ValueEventListener listener) {
         reference.orderByChild("name").equalTo(name).addListenerForSingleValueEvent(listener);
     }
-
 
     // Add a new user to the database using UID as key
     public static void addUser(String uid, HelperClass user, DatabaseReference.CompletionListener listener) {

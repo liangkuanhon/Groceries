@@ -1,4 +1,4 @@
-package com.example.groceries;
+package com.example.groceries.activities;
 
 import android.os.Bundle;
 
@@ -15,13 +15,15 @@ import android.util.Patterns;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.groceries.R;
+import com.example.groceries.helper.FirebaseHelper;
+import com.example.groceries.helper.HelperClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -114,9 +116,10 @@ public class SignupActivity extends AppCompatActivity {
                 }
 
                 //Check if username exist in database
-                reference.child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+                FirebaseHelper.checkUsernameExists(username, new ValueEventListener(){
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+                        //String usernameFromDB = dataSnapshot.child("username").getValue(String.class);
                         if (dataSnapshot.exists()) {
                             // Username already exists
                             signup_username.setError("Username is already taken");
@@ -152,16 +155,6 @@ public class SignupActivity extends AppCompatActivity {
                                     }
 
                                 }
-//                                        HelperClass helperClass = new HelperClass(email, username);
-//                                        reference.child(username).setValue(helperClass);
-//
-//                                        Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
-//                                        Intent intent = new Intent(SignupActivity.this, NameActivity.class);
-//                                        intent.putExtra("USERNAME", username);
-//                                        startActivity(intent);
-//                                    } else {
-//                                        Toast.makeText(SignupActivity.this, "Signup failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-//                                    }
 
                             });
                         }

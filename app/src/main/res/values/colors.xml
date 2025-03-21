@@ -4,6 +4,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#0000FF</color>
     <color name="grey">#7f7f7f</color>
+    <color name="heading_grey">#828282</color>
+    <color name="light_grey">#D4D4D4</color>
+    <color name="lightest_grey">#F5F5F5</color>
     <color name="navy">#000080</color>
     <color name="sky_blue">#87CEEB</color>
     <color name="steel_blue">#4682B4</color>
