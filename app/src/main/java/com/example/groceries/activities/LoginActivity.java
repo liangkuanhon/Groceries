@@ -3,7 +3,7 @@ package com.example.groceries.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
-import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -13,51 +13,46 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.groceries.R;
+import com.example.groceries.databinding.ActivityLoginBinding; // Import the generated binding class
 import com.example.groceries.helper.FirebaseHelper;
 import com.google.android.material.button.MaterialButton;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-import android.widget.Toast;
-
 import java.util.Objects;
 
-import android.content.SharedPreferences; //so they don't need to login everytime
+import android.content.SharedPreferences;
 
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
-    private EditText login_input, login_password;
-    private MaterialButton login_button, signup_button;
+    private ActivityLoginBinding binding; // Declare the binding variable
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Initialize View Binding
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_login);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
         auth = FirebaseAuth.getInstance();
-        login_input = findViewById(R.id.login_input);
-        login_password = findViewById(R.id.login_password);
-        login_button = findViewById(R.id.login_button);
-        signup_button = findViewById(R.id.signup_button);
 
-
-      
-        login_button.setOnClickListener(view -> {
+        // Use binding to access views
+        binding.loginButton.setOnClickListener(view -> {
             if (ValidInput() && ValidPassword()) {
-
-                String input = login_input.getText().toString().trim();
-                String password = login_password.getText().toString().trim();
+                String input = binding.loginInput.getText().toString().trim();
+                String password = binding.loginPassword.getText().toString().trim();
 
                 if (isValidEmail(input)) {
                     // If input is an email, log in directly
@@ -69,37 +64,36 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        signup_button.setOnClickListener(view -> {
+        binding.signupButton.setOnClickListener(view -> {
             Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
             startActivity(intent);
         });
     }
-
 
     private boolean isValidEmail(String input) {
         return Patterns.EMAIL_ADDRESS.matcher(input).matches();
     }
 
     private Boolean ValidInput() {
-        String input = login_input.getText().toString();
+        String input = binding.loginInput.getText().toString();
         if (input.isEmpty()) {
-            login_input.setError("Input cannot be empty");
-            login_input.requestFocus();
+            binding.loginInput.setError("Input cannot be empty");
+            binding.loginInput.requestFocus();
             return false;
         } else {
-            login_input.setError(null);
+            binding.loginInput.setError(null);
             return true;
         }
     }
 
     private Boolean ValidPassword() {
-        String password = login_password.getText().toString();
+        String password = binding.loginPassword.getText().toString();
         if (password.isEmpty()) {
-            login_password.setError("Password cannot be empty");
-            login_password.requestFocus();
+            binding.loginPassword.setError("Password cannot be empty");
+            binding.loginPassword.requestFocus();
             return false;
         } else {
-            login_password.setError(null);
+            binding.loginPassword.setError(null);
             return true;
         }
     }
@@ -149,13 +143,13 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                     if (!userFound) {
-                        login_input.setError("Username does not exist");
-                        login_input.requestFocus();
+                        binding.loginInput.setError("Username does not exist");
+                        binding.loginInput.requestFocus();
                     }
                 } else {
                     // If the snapshot does not exist at all
-                    login_input.setError("Username does not exist");
-                    login_input.requestFocus();
+                    binding.loginInput.setError("Username does not exist");
+                    binding.loginInput.requestFocus();
                 }
             }
 

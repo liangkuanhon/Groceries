@@ -1,6 +1,8 @@
 <resources>
+    <!-- string resources misc -->
+    <string name="app_name">NestCart</string>
+
     <!-- string resources login activity -->
-    <string name="app_name">Groceries</string>
     <string name="email_or_user">Email or Username</string>
     <string name="password">Password</string>
     <string name="login">LOG IN</string>
@@ -30,11 +32,16 @@
     <string name="general">General</string>
     <string name="settings">Settings</string>
     <string name="language">Language</string>
+    <string name="favourite">Favourite</string>
     <string name="support">Support</string>
     <string name="contact">Contact Us</string>
     <string name="web">Website</string>
     <string name="login1">Login</string>
     <string name="switch_account">Switch Account</string>
     <string name="logout">Logout</string>
+
+    <!-- string resources profile activity -->
+    <string name="edit">Edit Profile</string>
+    <string name="save">Save Profile</string>
 
 </resources>

@@ -76,6 +76,7 @@
                 android:layout_marginTop="25dp"
                 android:background="@drawable/muted_border"
                 android:hint="@string/password"
+                android:inputType="textPassword"
                 android:textColorHint="@color/light_greyish_blue"
                 android:padding="15dp"
                 android:singleLine="true"/>

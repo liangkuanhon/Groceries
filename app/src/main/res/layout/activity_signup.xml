@@ -96,6 +96,7 @@
                 android:layout_marginTop="15dp"
                 android:background="@drawable/muted_border"
                 android:hint="@string/password"
+                android:inputType="textPassword"
                 android:padding="15dp"
                 android:singleLine="true"/>
 
@@ -106,6 +107,7 @@
                 android:layout_marginTop="15dp"
                 android:background="@drawable/muted_border"
                 android:hint="@string/reconfirm"
+                android:inputType="textPassword"
                 android:textColorHint="@color/light_greyish_blue"
                 android:padding="15dp"
                 android:singleLine="true"/>
