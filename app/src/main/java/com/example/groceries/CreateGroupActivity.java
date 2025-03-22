@@ -21,11 +21,15 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //set the content to creategroup xml
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_creategroup);
 
+        //get reference to the input text box
         groupNameInput = findViewById(R.id.group_name_input);
         Button createGroupButton = findViewById(R.id.create_group_confirm_button);
+
+        //get database reference
         databaseReference = FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
 

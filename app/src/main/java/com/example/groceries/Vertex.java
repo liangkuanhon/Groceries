@@ -57,4 +57,12 @@ public class Vertex {
     public void addNeighbour(Vertex n){
         neighbours.add(n);  // Ensures that the neighbor is unique
     }
+
+
+    //other methods
+
+    //method to clear neighbours
+    public void clearNeighbours(){
+        neighbours.clear();
+    }
 }

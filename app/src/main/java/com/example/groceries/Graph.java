@@ -6,6 +6,8 @@ import java.util.HashSet;
 public class Graph {
     private HashMap<String, Vertex> allVertices;  // Use HashMap for fast lookup
 
+    private Vertex source;
+
     // Constructor initializes the HashMap
     public Graph(){
         allVertices = new HashMap<>();
@@ -40,5 +42,23 @@ public class Graph {
             // Log the exception message for the developer, but don't expose to the user
             System.err.println("start or end vertices are either null or not within the graph");
         }
+    }
+
+    public boolean setSource(Vertex v){
+        if(!allVertices.containsKey(v.getVertexName())){
+            //cannot add
+            return false;
+        }
+        else{
+            //successfully added
+            source = allVertices.get(v.getVertexName());
+            return true;
+        }
+    }
+
+
+    //leave empty for now idk
+    public void performBFSSearch(){
+        return;
     }
 }
