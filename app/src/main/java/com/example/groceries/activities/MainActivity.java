@@ -20,6 +20,7 @@ import com.example.groceries.R;
 import com.example.groceries.adapter.MyAdapter;
 import com.example.groceries.databinding.ActivityMainBinding;
 import com.example.groceries.fragments.ActivityFragment;
+import com.example.groceries.fragments.AddFragment;
 import com.example.groceries.fragments.HomeFragment;
 import com.example.groceries.fragments.MessageFragment;
 import com.example.groceries.fragments.ProfileFragment;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private HomeFragment homeFragment = new HomeFragment();
     private ActivityFragment activityFragment = new ActivityFragment();
+    private AddFragment addFragment = new AddFragment();
     private MessageFragment messageFragment = new MessageFragment();
     private ProfileFragment profileFragment = new ProfileFragment();
 
@@ -65,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.activities) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, activityFragment).commit();
+                    return true;
+                } else if (itemId == R.id.add) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, addFragment).commit();
                     return true;
                 } else if (itemId == R.id.messages) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, messageFragment).commit();
