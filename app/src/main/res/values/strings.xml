@@ -44,4 +44,9 @@
     <string name="edit">Edit Profile</string>
     <string name="save">Save Profile</string>
 
+    <!-- string resources create group activity -->
+    <string name="create_group">Create Group</string>
+    <string name="enter_group_name">Enter Group Name</string>
+    <string name="group_name">Group Name</string>
+
 </resources>
