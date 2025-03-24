@@ -54,6 +54,11 @@ public class SignupActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
+        binding.loginLink.setOnClickListener(view -> {
+            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+            startActivity(intent);
+        });
+
         // Set up the signup button click listener
         binding.signupButton.setOnClickListener(view -> {
             database = FirebaseDatabase.getInstance();

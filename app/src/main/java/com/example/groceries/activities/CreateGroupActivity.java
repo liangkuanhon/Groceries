@@ -6,9 +6,17 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.example.groceries.R;
+import com.example.groceries.databinding.ActivityCreategroupBinding;
+import com.example.groceries.databinding.ActivityLoginBinding;
+import com.example.groceries.helper.FirebaseHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -16,33 +24,40 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CreateGroupActivity extends AppCompatActivity {
-    private EditText groupNameInput;
-    private DatabaseReference databaseReference;
+    private ActivityCreategroupBinding b;
     private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //set the content to creategroup xml
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_creategroup);
+        b = ActivityCreategroupBinding.inflate(getLayoutInflater());
+        setContentView(b.getRoot());
 
-        //get reference to the input text box
-        groupNameInput = findViewById(R.id.group_name_input);
-        Button createGroupButton = findViewById(R.id.create_group_confirm_button);
+        EdgeToEdge.enable(this);
+        ViewCompat.setOnApplyWindowInsetsListener(b.main, (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
-        //get database reference
-        databaseReference = FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
 
-        createGroupButton.setOnClickListener(v -> createGroup());
+        b.createGroupButton.setOnClickListener(v -> createGroup());
+
+        b.cancel.setOnClickListener(view -> {
+            Intent intent = new Intent(CreateGroupActivity.this, LoginActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void createGroup() {
-        String groupName = groupNameInput.getText().toString().trim();
-        String userId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
+        String groupName = b.groupNameInput.getText().toString().trim();
+        String userId = FirebaseHelper.getCurrentUserId();
 
         if (groupName.isEmpty()) {
-            Toast.makeText(this, "Enter a group name", Toast.LENGTH_SHORT).show();
+            b.groupNameInput.setError("Group Name cannot be empty");
+            b.groupNameInput.requestFocus();
             return;
         }
         if (userId == null) {
@@ -51,7 +66,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         }
 
         // Generate unique group ID
-        String groupId = databaseReference.child("groups").push().getKey();
+        String groupId = FirebaseDatabase.getInstance().getReference("groups").push().getKey();
 
         if (groupId == null) {
             Toast.makeText(this, "Error creating group", Toast.LENGTH_SHORT).show();
@@ -68,20 +83,26 @@ public class CreateGroupActivity extends AppCompatActivity {
         userData.put("groups/" + groupId, true); // Add group to user's list
 
         // Update Firebase
-        databaseReference.child("groups").child(groupId).updateChildren(groupData);
-        databaseReference.child("users").child(userId).updateChildren(userData)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
+        FirebaseHelper.createGroup(groupId, groupData, (groupError, groupRef) -> {
+            if (groupError == null) {
+                // Group created successfully, now add group to user's list
+                FirebaseHelper.addGroupToUser(userId, groupId, (userError, userRef) -> {
+                    if (userError == null) {
+                        // Group added to user's list successfully
                         Toast.makeText(CreateGroupActivity.this, "Group created!", Toast.LENGTH_SHORT).show();
                         finish(); // Close activity
 
-                        //reload groups
-                        Intent intent = new Intent(CreateGroupActivity.this, GroupActivity.class);
+                        Intent intent = new Intent(CreateGroupActivity.this, GroupViewActivity.class);
                         startActivity(intent);
                     } else {
-                        Toast.makeText(CreateGroupActivity.this, "Failed to create group", Toast.LENGTH_SHORT).show();
-                        Log.e("CreateGroupActivity", "Error: " + task.getException());
+                        Toast.makeText(CreateGroupActivity.this, "Failed to add group to user", Toast.LENGTH_SHORT).show();
+                        Log.e("CreateGroupActivity", "Error: " + userError.getMessage());
                     }
                 });
+            } else {
+                Toast.makeText(CreateGroupActivity.this, "Failed to create group", Toast.LENGTH_SHORT).show();
+                Log.e("CreateGroupActivity", "Error: " + groupError.getMessage());
+            }
+        });
     }
 }

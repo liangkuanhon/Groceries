@@ -6,6 +6,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class FirebaseHelper {
     private static FirebaseDatabase database;
     private static DatabaseReference reference;
@@ -68,6 +71,18 @@ public class FirebaseHelper {
     // Fetch user details by UID
     public static void fetchUserDetails(String uid, ValueEventListener listener) {
         reference.child(uid).addListenerForSingleValueEvent(listener);
+    }
+
+    // Create a new group in database
+    public static void createGroup(String groupId, Map<String, Object> groupData, DatabaseReference.CompletionListener listener) {
+        database.getReference("groups").child(groupId).updateChildren(groupData, listener);
+    }
+
+    // Add group to user's list
+    public static void addGroupToUser(String userId, String groupId, DatabaseReference.CompletionListener listener) {
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("groups/" + groupId, true);
+        database.getReference("users").child(userId).updateChildren(userData, listener);
     }
 
 

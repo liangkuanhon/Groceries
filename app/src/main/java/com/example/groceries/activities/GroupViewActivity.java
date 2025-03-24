@@ -19,7 +19,7 @@ import java.util.List;
 
 import com.example.groceries.R;
 
-public class GroupActivity extends AppCompatActivity {
+public class GroupViewActivity extends AppCompatActivity {
     private GroupAdapter adapter;
     private List<String> groupList;
 
@@ -41,7 +41,7 @@ public class GroupActivity extends AppCompatActivity {
         //it will go to the respective xml inside creategroupactivity.java
         Button createGroupButton = findViewById(R.id.create_group_button);
         createGroupButton.setOnClickListener(view -> {
-            Intent intent = new Intent(GroupActivity.this, CreateGroupActivity.class);
+            Intent intent = new Intent(GroupViewActivity.this, CreateGroupActivity.class);
             startActivity(intent);
         });
 
@@ -56,8 +56,8 @@ public class GroupActivity extends AppCompatActivity {
         //if somehow the user is NOT logged in and in this view, log report
         //go back to login screen
         if (firebaseUID == null) {
-            Log.w("GroupActivity", "No user is logged in.");
-            Intent intent = new Intent(GroupActivity.this, LoginActivity.class);
+            Log.w("GroupViewActivity", "No user is logged in.");
+            Intent intent = new Intent(GroupViewActivity.this, LoginActivity.class);
 
             //go back to login
             startActivity(intent);
@@ -83,7 +83,7 @@ public class GroupActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.w("GroupActivity", "Failed to read groups", databaseError.toException());
+                Log.w("GroupViewActivity", "Failed to read groups", databaseError.toException());
             }
         });
     }

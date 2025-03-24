@@ -16,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.groceries.R;
+import com.example.groceries.activities.CreateGroupActivity;
+import com.example.groceries.activities.GroupViewActivity;
+import com.example.groceries.activities.MainActivity;
 import com.example.groceries.databinding.FragmentProfileBinding; // Import the generated binding class
 import com.example.groceries.activities.LoginActivity;
 import com.example.groceries.helper.FirebaseHelper;
@@ -66,9 +69,10 @@ public class ProfileFragment extends Fragment {
         });
 
         // Set up click listeners
-        binding.settings.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Settings Clicked!", Toast.LENGTH_SHORT).show()
-        );
+        binding.settings.setOnClickListener(v -> {
+            Intent intent = new Intent(requireActivity(), GroupViewActivity.class);
+            startActivity(intent);
+        });
 
         binding.language.setOnClickListener(v ->
                 Toast.makeText(getContext(), "Language Clicked!", Toast.LENGTH_SHORT).show()

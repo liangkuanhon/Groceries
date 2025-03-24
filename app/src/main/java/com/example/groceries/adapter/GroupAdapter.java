@@ -3,6 +3,7 @@ package com.example.groceries.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +14,15 @@ import java.util.List;
 
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupViewHolder> {
     private List<String> groupList;
+    private OnGroupClickListener listener;
+
+    public interface OnGroupClickListener {
+        void onGroupClick(String groupName);
+    }
+
+    public void setOnGroupClickListener(OnGroupClickListener listener){
+        this.listener = listener;
+    }
 
     public GroupAdapter(List<String> groupList) {
         this.groupList = groupList;
@@ -29,7 +39,13 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupViewHol
     @Override
     public void onBindViewHolder(@NonNull GroupViewHolder holder, int position) {
         String groupName = groupList.get(position);
-        holder.groupNameTextView.setText(groupName);
+        holder.groupName.setText(groupName);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onGroupClick(groupName);
+            }
+        });
     }
 
     @Override
@@ -38,11 +54,11 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupViewHol
     }
 
     static class GroupViewHolder extends RecyclerView.ViewHolder {
-        TextView groupNameTextView;
+        TextView groupName;
 
         public GroupViewHolder(@NonNull View itemView) {
             super(itemView);
-            groupNameTextView = itemView.findViewById(R.id.group_name);
+            groupName = itemView.findViewById(R.id.group_name);
         }
     }
 }

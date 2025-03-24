@@ -1,10 +1,8 @@
 package com.example.groceries.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -12,23 +10,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.groceries.R;
-import com.example.groceries.adapter.MyAdapter;
 import com.example.groceries.databinding.ActivityMainBinding;
 import com.example.groceries.fragments.ActivityFragment;
 import com.example.groceries.fragments.AddFragment;
+import com.example.groceries.fragments.AllGroupFragment;
 import com.example.groceries.fragments.HomeFragment;
-import com.example.groceries.fragments.MessageFragment;
 import com.example.groceries.fragments.ProfileFragment;
-import com.example.groceries.helper.FirebaseHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private HomeFragment homeFragment = new HomeFragment();
     private ActivityFragment activityFragment = new ActivityFragment();
     private AddFragment addFragment = new AddFragment();
-    private MessageFragment messageFragment = new MessageFragment();
+    private AllGroupFragment groupsFragment = new AllGroupFragment();
     private ProfileFragment profileFragment = new ProfileFragment();
 
     @Override
@@ -48,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         EdgeToEdge.enable(this);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -65,14 +56,15 @@ public class MainActivity extends AppCompatActivity {
                 if (itemId == R.id.home) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, homeFragment).commit();
                     return true;
-                } else if (itemId == R.id.activities) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, activityFragment).commit();
+                } else if (itemId == R.id.group) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, groupsFragment).commit();
                     return true;
                 } else if (itemId == R.id.add) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, addFragment).commit();
+                    Intent intent = new Intent(MainActivity.this, CreateGroupActivity.class);
+                    startActivity(intent);
                     return true;
-                } else if (itemId == R.id.messages) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, messageFragment).commit();
+                } else if (itemId == R.id.activities) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, activityFragment).commit();
                     return true;
                 } else if (itemId == R.id.profile) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, profileFragment).commit();

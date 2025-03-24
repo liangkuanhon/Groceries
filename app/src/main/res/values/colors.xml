@@ -5,6 +5,7 @@
     <color name="blue">#0000FF</color>
     <color name="grey">#7f7f7f</color>
     <color name="heading_grey">#828282</color>
+    <color name="bg_grey">#F5F5F5</color>
     <color name="light_grey">#D4D4D4</color>
     <color name="lightest_grey">#F5F5F5</color>
     <color name="navy">#000080</color>
@@ -20,10 +21,15 @@
     <!-- Colour template for app -->
     <!-- Base UI -->
     <color name="navy_blue">#2C3E50</color>
-    <color name="soft_gray">#F5F5F5</color>
     <color name="dark_gray">#7F8C8D</color>
     <color name="deep_blue">#2C3E50</color>
     <color name="light_greyish_blue">#B0BEC5</color>
+
+    <!-- Additional Colours for depth -->
+    <color name="royal_purple">#8E44AD</color>
+    <color name="cool_blue">#ECF0F1</color>
+    <color name="crimson_red">#C0392B</color>
+    <color name="soft_gray">#B0B0B0</color>
 
     <!-- For highlights -->
     <color name="bright_teal">#1ABC9C</color>
