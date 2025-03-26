@@ -16,7 +16,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.groceries.R;
+import com.example.groceries.activities.CategoryActivity;
 import com.example.groceries.activities.CreateGroupActivity;
+import com.example.groceries.activities.GroceryListActivity;
 import com.example.groceries.activities.GroupViewActivity;
 import com.example.groceries.activities.MainActivity;
 import com.example.groceries.databinding.FragmentProfileBinding; // Import the generated binding class
@@ -74,13 +76,15 @@ public class ProfileFragment extends Fragment {
             startActivity(intent);
         });
 
-        binding.language.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Language Clicked!", Toast.LENGTH_SHORT).show()
-        );
+        binding.language.setOnClickListener(v -> {
+                Intent intent = new Intent(requireActivity(), CategoryActivity.class);
+        startActivity(intent);
+        });
 
-        binding.favourites.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Language Clicked!", Toast.LENGTH_SHORT).show()
-        );
+        binding.favourites.setOnClickListener(v ->{
+                Intent intent = new Intent(requireActivity(), GroceryListActivity.class);
+        startActivity(intent);
+        });
 
         binding.contact.setOnClickListener(v ->
                 Toast.makeText(getContext(), "Contact Clicked!", Toast.LENGTH_SHORT).show()
