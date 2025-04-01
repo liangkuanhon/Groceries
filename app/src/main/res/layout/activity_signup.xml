@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:background="@color/soft_gray"
+    android:background="@color/bg_grey"
     tools:context="activities.SignupActivity">
 
     <ImageView
@@ -30,7 +30,7 @@
         android:text="@string/tagline"
         android:textSize="20sp"
         android:textStyle="italic|bold"
-        android:textColor="@color/muted_gray"
+        android:textColor="@color/deep_blue"
         android:gravity="center"
         app:layout_constraintBottom_toTopOf="@id/layout"
         app:layout_constraintTop_toBottomOf="@+id/signup_logo" />
@@ -96,6 +96,7 @@
                 android:layout_marginTop="15dp"
                 android:background="@drawable/muted_border"
                 android:hint="@string/password"
+                android:inputType="textPassword"
                 android:padding="15dp"
                 android:singleLine="true"/>
 
@@ -106,6 +107,7 @@
                 android:layout_marginTop="15dp"
                 android:background="@drawable/muted_border"
                 android:hint="@string/reconfirm"
+                android:inputType="textPassword"
                 android:textColorHint="@color/light_greyish_blue"
                 android:padding="15dp"
                 android:singleLine="true"/>
@@ -123,7 +125,27 @@
                 app:cornerRadius="10dp"
                 style="@style/Widget.MaterialComponents.Button"/>
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/already"/>
+
+                <TextView
+                    android:id="@+id/login_link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/signup_underline"
+                    android:textColor="@color/royal_purple"
+                    android:layout_marginStart="10dp"/>
+
+            </LinearLayout>
 
 
         </LinearLayout>

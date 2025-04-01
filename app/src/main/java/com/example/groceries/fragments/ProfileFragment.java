@@ -6,90 +6,121 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.groceries.R;
-import com.example.groceries.activities.GroupActivity;
+import com.example.groceries.activities.CategoryActivity;
+import com.example.groceries.activities.CreateGroupActivity;
+import com.example.groceries.activities.GroceryListActivity;
+import com.example.groceries.activities.GroupViewActivity;
+import com.example.groceries.activities.MainActivity;
+import com.example.groceries.databinding.FragmentProfileBinding; // Import the generated binding class
 import com.example.groceries.activities.LoginActivity;
+import com.example.groceries.helper.FirebaseHelper;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 public class ProfileFragment extends Fragment {
 
-    private TextView settings, language, contact, web, switchAccount, logout;
+    private FragmentProfileBinding binding; // Declare the binding variable
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        // Initialize View Binding
+        binding = FragmentProfileBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize Clickable Text
-        settings = view.findViewById(R.id.settings);
-        language = view.findViewById(R.id.language);
-        contact = view.findViewById(R.id.contact);
-        web = view.findViewById(R.id.web);
-        switchAccount = view.findViewById(R.id.switchAccount);
-        logout = view.findViewById(R.id.logout);
+        binding.profileImage.setOnClickListener(v -> {
+            navigateToEditProfile();
+        });
 
-        // Get uid from intent
-        String uid = requireActivity().getIntent().getStringExtra("UID");
-
-        // Navigate to GroupActivity when "Your Groups" button is clicked
-        settings.setOnClickListener(v ->
-                Toast.makeText(getContext(), "TextView Clicked!", Toast.LENGTH_SHORT).show()
-        );
-
-        language.setOnClickListener(v ->
-                Toast.makeText(getContext(), "TextView Clicked!", Toast.LENGTH_SHORT).show()
-        );
-
-        contact.setOnClickListener(v ->
-                Toast.makeText(getContext(), "TextView Clicked!", Toast.LENGTH_SHORT).show()
-        );
-
-        web.setOnClickListener(v ->
-                Toast.makeText(getContext(), "TextView Clicked!", Toast.LENGTH_SHORT).show()
-        );
-
-        switchAccount.setOnClickListener(v ->
-                Toast.makeText(getContext(), "TextView Clicked!", Toast.LENGTH_SHORT).show()
-        );
-
-        // Setup logout button click listener
-        logout.setOnClickListener(new View.OnClickListener() {
+        // Fetch user details
+        FirebaseHelper.fetchUserDetails(FirebaseHelper.getCurrentUserId(), new ValueEventListener() {
             @Override
-            public void onClick(View view) {
-                logout();
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String name = snapshot.child("name").getValue(String.class);
+                    String email = snapshot.child("email").getValue(String.class);
+                    binding.userName.setText(name);
+                    binding.userEmail.setText(email);
+                } else {
+                    binding.userName.setText("Name does not exist");
+                    binding.userEmail.setText("Email does not exist");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Failed to load user data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Set up click listeners
+        binding.settings.setOnClickListener(v -> {
+            Intent intent = new Intent(requireActivity(), GroupViewActivity.class);
+            startActivity(intent);
+        });
+
+        binding.language.setOnClickListener(v -> {
+                Intent intent = new Intent(requireActivity(), CategoryActivity.class);
+        startActivity(intent);
+        });
+
+        binding.favourites.setOnClickListener(v ->{
+                Intent intent = new Intent(requireActivity(), GroceryListActivity.class);
+        startActivity(intent);
+        });
+
+        binding.contact.setOnClickListener(v ->
+                Toast.makeText(getContext(), "Contact Clicked!", Toast.LENGTH_SHORT).show()
+        );
+
+        binding.web.setOnClickListener(v ->
+                Toast.makeText(getContext(), "Web Clicked!", Toast.LENGTH_SHORT).show()
+        );
+
+        binding.switchAccount.setOnClickListener(v ->
+                Toast.makeText(getContext(), "Switch Account Clicked!", Toast.LENGTH_SHORT).show()
+        );
+
+        binding.logout.setOnClickListener(v -> logout());
+    }
+
+    private void navigateToEditProfile(){
+        EditProfileFragment editProfileFragment = new EditProfileFragment();
+
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_frame, editProfileFragment);
+        transaction.commit();
     }
 
     public void logout() {
-        // Get an instance of FirebaseAuth
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-
         // Sign out the current user
-        firebaseAuth.signOut();
+        FirebaseAuth.getInstance().signOut();
 
-        // Optional: Perform post-logout actions
+        // Redirect to the login screen
         redirectToLoginScreen();
+
+        // Clear user data
         clearUserData();
     }
 
     private void redirectToLoginScreen() {
-        // Redirect the user to the login screen
         Intent intent = new Intent(requireActivity(), LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear the back stack
         startActivity(intent);
@@ -97,7 +128,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void clearUserData() {
-        // Clear any user-related data from your app (e.g., SharedPreferences, cached data)
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
