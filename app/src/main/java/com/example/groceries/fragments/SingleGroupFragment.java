@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,19 +24,26 @@ import com.example.groceries.activities.GroceryListActivity;
 import com.example.groceries.activities.ItemsActivity;
 import com.example.groceries.activities.LoginActivity;
 import com.example.groceries.activities.SignupActivity;
+import com.example.groceries.adapter.GroceryItemAdapter;
 import com.example.groceries.databinding.ActivityMainBinding;
 import com.example.groceries.databinding.FragmentAllGroupBinding;
 import com.example.groceries.databinding.FragmentSingleGroupBinding;
+import com.example.groceries.helper.FirebaseHelper;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SingleGroupFragment extends Fragment {
     private FragmentSingleGroupBinding b;
     private static final String ARG_GROUP_NAME = "group_name";
     private static final String ARG_GROUP_ID = "group_id";
-
     private String groupName;
     private String groupId;
+    private GroceryItemAdapter adapter;
+    private final List<GroceryItem> groceryList = new ArrayList<>();
 
     public SingleGroupFragment(){
     }
@@ -72,74 +80,108 @@ public class SingleGroupFragment extends Fragment {
 
         b.groupName.setText(groupName);
 
-        // Here you can fetch additional group details using groupId
-        // and populate the fragment with that data
+        setupClickListeners();
 
-        // FOR CATEGORY LIST VIEW
-        String[] categories = GroceryData.getCategoryNames();
+        setupRecyclerView();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_list_item_1,
-                categories
-        );
+        getItemsFromFirebase();
+    }
 
-        b.categoryList.setAdapter(adapter);
-
-        // Set click listener for each category
-        b.categoryList.setOnItemClickListener((parent, view1, position, id) -> {
-            String selectedCategory = categories[position];
-
-            // Start ItemsActivity and pass the selected category
-            Intent intent = new Intent(requireActivity(), ItemsActivity.class);
-            intent.putExtra("CATEGORY", selectedCategory);
-            startActivity(intent);
-        });
-
+    private void setupClickListeners() {
         b.backArrow.setOnClickListener(v -> {
-            navigateToAllGroup();
+            requireActivity().getSupportFragmentManager().popBackStackImmediate();
         });
 
-        // FOR GROCERY LIST VIEW
-        List<GroceryItem> groceryList = GroceryListManager.getInstance().getGroceryList();
+        b.addItem.setOnClickListener(v -> {
+            CategoryFragment categoryFragment = CategoryFragment.newInstance(groupId);
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            transaction.replace(R.id.main_frame, categoryFragment);
+            transaction.addToBackStack("SingleFragment");
+            transaction.commit();
+        });
+    }
 
+    private void setupRecyclerView(){
+        adapter = new GroceryItemAdapter(groceryList, new GroceryItemAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(GroceryItem item) {
+                // Toggle checked status
+                FirebaseHelper.updateGroupItemStatus(groupId, item.getId(), !item.isChecked());
+            }
+
+            @Override
+            public void onItemLongClick(GroceryItem item) {
+                // Delete item on long click
+                FirebaseHelper.removeGroupItem(groupId, item.getId(), (error, ref) -> {
+                    if (error != null) {
+                        // Handle error
+                    }
+                });
+            }
+        });
+
+        b.groceryListView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        b.groceryListView.setAdapter(adapter);
+//        // FOR GROCERY LIST VIEW
+//        List<GroceryItem> groceryList = GroceryListManager.getInstance().getGroceryList();
+//
+//            ArrayAdapter<GroceryItem> gadapter = new ArrayAdapter<GroceryItem>(
+//                    requireContext(),
+//                    R.layout.grocery_list_item,
+//                    R.id.itemName,
+//                    groceryList
+//            ) {
+//                @Override
+//                public View getView(int position, View convertView, ViewGroup parent) {
+//                    View view = super.getView(position, convertView, parent);
+//                    GroceryItem item = getItem(position);
+//
+//                    TextView name = view.findViewById(R.id.itemName);
+//                    ImageView image = view.findViewById(R.id.itemImage);
+//
+//                    name.setText(item.getName());
+//                    image.setImageResource(item.getImageRes());
+//
+//                    return view;
+//                }
+//            };
+//
+//            b.groceryListView.setAdapter(gadapter);
+//        }
+    }
+
+    private void getItemsFromFirebase(){
+        FirebaseHelper.getGroupItems(groupId, new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                groceryList.clear();
+                for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
+                    GroceryItem item = itemSnapshot.getValue(GroceryItem.class);
+                    if (item != null) {
+                        item.setId(itemSnapshot.getKey());
+                        groceryList.add(item);
+                    }
+                }
+                adapter.notifyDataSetChanged();
+                updateEmptyState();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error
+            }
+        });
+
+    }
+
+    private void updateEmptyState() {
         if (groceryList.isEmpty()) {
             b.groceryListView.setVisibility(View.GONE);
             b.emptyView.setVisibility(View.VISIBLE);
         } else {
             b.groceryListView.setVisibility(View.VISIBLE);
             b.emptyView.setVisibility(View.GONE);
-
-            ArrayAdapter<GroceryItem> gadapter = new ArrayAdapter<GroceryItem>(
-                    requireContext(),
-                    R.layout.grocery_list_item,
-                    R.id.itemName,
-                    groceryList
-            ) {
-                @Override
-                public View getView(int position, View convertView, ViewGroup parent) {
-                    View view = super.getView(position, convertView, parent);
-                    GroceryItem item = getItem(position);
-
-                    TextView name = view.findViewById(R.id.itemName);
-                    ImageView image = view.findViewById(R.id.itemImage);
-
-                    name.setText(item.getName());
-                    image.setImageResource(item.getImageResId());
-
-                    return view;
-                }
-            };
-
-            b.groceryListView.setAdapter(gadapter);
         }
     }
 
-    private void navigateToAllGroup(){
-        AllGroupFragment AllGroupFragment = new AllGroupFragment();
-
-        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.main_frame, AllGroupFragment);
-        transaction.commit();
-    }
 }

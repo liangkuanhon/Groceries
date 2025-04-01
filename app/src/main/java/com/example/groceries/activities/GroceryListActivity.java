@@ -50,7 +50,7 @@ public class GroceryListActivity extends AppCompatActivity {
                     ImageView image = view.findViewById(R.id.itemImage);
 
                     name.setText(item.getName());
-                    image.setImageResource(item.getImageResId());
+                    image.setImageResource(item.getImageRes());
 
                     return view;
                 }
