@@ -14,7 +14,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.groceries.R;
 import com.example.groceries.databinding.ActivityMainBinding;
 import com.example.groceries.fragments.ActivityFragment;
-import com.example.groceries.fragments.AddFragment;
 import com.example.groceries.fragments.AllGroupFragment;
 import com.example.groceries.fragments.HomeFragment;
 import com.example.groceries.fragments.ProfileFragment;
@@ -26,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private HomeFragment homeFragment = new HomeFragment();
     private ActivityFragment activityFragment = new ActivityFragment();
-    private AddFragment addFragment = new AddFragment();
     private AllGroupFragment groupsFragment = new AllGroupFragment();
     private ProfileFragment profileFragment = new ProfileFragment();
 

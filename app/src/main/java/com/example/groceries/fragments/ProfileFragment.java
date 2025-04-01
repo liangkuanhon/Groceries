@@ -2,8 +2,10 @@ package com.example.groceries.fragments;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import androidx.appcompat.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,12 +18,15 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.groceries.R;
+import com.example.groceries.activities.CategoryActivity;
 import com.example.groceries.activities.CreateGroupActivity;
+import com.example.groceries.activities.GroceryListActivity;
 import com.example.groceries.activities.GroupViewActivity;
 import com.example.groceries.activities.MainActivity;
 import com.example.groceries.databinding.FragmentProfileBinding; // Import the generated binding class
 import com.example.groceries.activities.LoginActivity;
 import com.example.groceries.helper.FirebaseHelper;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,36 +34,69 @@ import com.google.firebase.database.ValueEventListener;
 
 public class ProfileFragment extends Fragment {
 
-    private FragmentProfileBinding binding; // Declare the binding variable
+    private FragmentProfileBinding b; // Declare the binding variable
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Initialize View Binding
-        binding = FragmentProfileBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+        b = FragmentProfileBinding.inflate(inflater, container, false);
+        return b.getRoot();
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.profileImage.setOnClickListener(v -> {
-            navigateToEditProfile();
+        setupClickListeners();
+        fetchUserDetails();
+    }
+
+    private void setupClickListeners() {
+        b.profileImage.setOnClickListener(v -> navigateToEditProfile());
+
+        b.settings.setOnClickListener(v -> {
+            Intent intent = new Intent(requireActivity(), GroupViewActivity.class);
+            startActivity(intent);
         });
 
-        // Fetch user details
+        b.language.setOnClickListener(v -> {
+            Intent intent = new Intent(requireActivity(), CategoryActivity.class);
+            startActivity(intent);
+        });
+
+        b.favourites.setOnClickListener(v -> {
+            Intent intent = new Intent(requireActivity(), GroceryListActivity.class);
+            startActivity(intent);
+        });
+
+        b.contact.setOnClickListener(v ->
+                Toast.makeText(getContext(), "Contact Clicked!", Toast.LENGTH_SHORT).show()
+        );
+
+        b.web.setOnClickListener(v ->
+                Toast.makeText(getContext(), "Web Clicked!", Toast.LENGTH_SHORT).show()
+        );
+
+        b.switchAccount.setOnClickListener(v ->
+                Toast.makeText(getContext(), "Switch Account Clicked!", Toast.LENGTH_SHORT).show()
+        );
+
+        b.logout.setOnClickListener(v -> showLogoutDialog());
+    }
+
+    private void fetchUserDetails() {
         FirebaseHelper.fetchUserDetails(FirebaseHelper.getCurrentUserId(), new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     String name = snapshot.child("name").getValue(String.class);
                     String email = snapshot.child("email").getValue(String.class);
-                    binding.userName.setText(name);
-                    binding.userEmail.setText(email);
+                    b.userName.setText(name);
+                    b.userEmail.setText(email);
                 } else {
-                    binding.userName.setText("Name does not exist");
-                    binding.userEmail.setText("Email does not exist");
+                    b.userName.setText("Name does not exist");
+                    b.userEmail.setText("Email does not exist");
                 }
             }
 
@@ -67,60 +105,40 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to load user data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
-        // Set up click listeners
-        binding.settings.setOnClickListener(v -> {
-            Intent intent = new Intent(requireActivity(), GroupViewActivity.class);
-            startActivity(intent);
-        });
-
-        binding.language.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Language Clicked!", Toast.LENGTH_SHORT).show()
-        );
-
-        binding.favourites.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Language Clicked!", Toast.LENGTH_SHORT).show()
-        );
-
-        binding.contact.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Contact Clicked!", Toast.LENGTH_SHORT).show()
-        );
-
-        binding.web.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Web Clicked!", Toast.LENGTH_SHORT).show()
-        );
-
-        binding.switchAccount.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Switch Account Clicked!", Toast.LENGTH_SHORT).show()
-        );
-
-        binding.logout.setOnClickListener(v -> logout());
     }
 
-    private void navigateToEditProfile(){
+    private void navigateToEditProfile() {
         EditProfileFragment editProfileFragment = new EditProfileFragment();
-
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.main_frame, editProfileFragment);
         transaction.commit();
     }
 
-    public void logout() {
-        // Sign out the current user
+    private void showLogoutDialog() {
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setMessage("Are you sure you want to logout?")
+                .setPositiveButton("Logout", (d, which) -> logout())
+                .setNegativeButton("Cancel", null)
+                .setCancelable(false)
+                .create();
+
+        dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
+    }
+
+    private void logout() {
         FirebaseAuth.getInstance().signOut();
-
-        // Redirect to the login screen
         redirectToLoginScreen();
-
-        // Clear user data
         clearUserData();
     }
 
     private void redirectToLoginScreen() {
         Intent intent = new Intent(requireActivity(), LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear the back stack
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        requireActivity().finish(); // Close the current activity
+        requireActivity().finish();
     }
 
     private void clearUserData() {
