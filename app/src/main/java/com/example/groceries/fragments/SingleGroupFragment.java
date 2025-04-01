@@ -94,11 +94,14 @@ public class SingleGroupFragment extends Fragment {
 
         b.addItem.setOnClickListener(v -> {
             CategoryFragment categoryFragment = CategoryFragment.newInstance(groupId);
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.main_frame, categoryFragment);
-            transaction.addToBackStack("SingleFragment");
-            transaction.commit();
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.main_frame, categoryFragment)
+                    .addToBackStack("SingleFragment")
+                    .commit();
         });
+
+        b.settings.setOnClickListener(v -> navigateToGroupSettings(groupId, groupName));
     }
 
     private void setupRecyclerView(){
@@ -122,32 +125,6 @@ public class SingleGroupFragment extends Fragment {
 
         b.groceryListView.setLayoutManager(new LinearLayoutManager(requireContext()));
         b.groceryListView.setAdapter(adapter);
-//        // FOR GROCERY LIST VIEW
-//        List<GroceryItem> groceryList = GroceryListManager.getInstance().getGroceryList();
-//
-//            ArrayAdapter<GroceryItem> gadapter = new ArrayAdapter<GroceryItem>(
-//                    requireContext(),
-//                    R.layout.grocery_list_item,
-//                    R.id.itemName,
-//                    groceryList
-//            ) {
-//                @Override
-//                public View getView(int position, View convertView, ViewGroup parent) {
-//                    View view = super.getView(position, convertView, parent);
-//                    GroceryItem item = getItem(position);
-//
-//                    TextView name = view.findViewById(R.id.itemName);
-//                    ImageView image = view.findViewById(R.id.itemImage);
-//
-//                    name.setText(item.getName());
-//                    image.setImageResource(item.getImageRes());
-//
-//                    return view;
-//                }
-//            };
-//
-//            b.groceryListView.setAdapter(gadapter);
-//        }
     }
 
     private void getItemsFromFirebase(){
@@ -182,6 +159,15 @@ public class SingleGroupFragment extends Fragment {
             b.groceryListView.setVisibility(View.VISIBLE);
             b.emptyView.setVisibility(View.GONE);
         }
+    }
+
+    private void navigateToGroupSettings(String groupId, String groupName) {
+        GroupSettingFragment groupSettingFragment = GroupSettingFragment.newInstance(groupId, groupName);
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_frame, groupSettingFragment)
+                .addToBackStack("SingleFragment")
+                .commit();
     }
 
 }
