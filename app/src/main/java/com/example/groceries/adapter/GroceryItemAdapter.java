@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.groceries.databinding.GroceryListItemBinding;
+import com.example.groceries.databinding.ItemGroceryListBinding;
 import com.example.groceries.GroceryItem;
 
 import java.util.List;
@@ -30,7 +30,7 @@ public class GroceryItemAdapter extends RecyclerView.Adapter<GroceryItemAdapter.
     @Override
     public GroceryItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        GroceryListItemBinding binding = GroceryListItemBinding.inflate(inflater, parent, false);
+        ItemGroceryListBinding binding = ItemGroceryListBinding.inflate(inflater, parent, false);
         return new GroceryItemViewHolder(binding);
     }
 
@@ -45,9 +45,9 @@ public class GroceryItemAdapter extends RecyclerView.Adapter<GroceryItemAdapter.
     }
 
     class GroceryItemViewHolder extends RecyclerView.ViewHolder {
-        private final GroceryListItemBinding b;
+        private final ItemGroceryListBinding b;
 
-        public GroceryItemViewHolder(GroceryListItemBinding b) {
+        public GroceryItemViewHolder(ItemGroceryListBinding b) {
             super(b.getRoot());
             this.b = b;
         }
