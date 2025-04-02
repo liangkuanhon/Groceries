@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -15,6 +16,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.groceries.R;
+import com.example.groceries.activities.User;
+import com.example.groceries.adapter.MemberAdapter;
 import com.example.groceries.databinding.FragmentGroupSettingBinding;
 import com.example.groceries.databinding.FragmentSingleGroupBinding;
 import com.example.groceries.helper.FirebaseHelper;
@@ -22,7 +25,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GroupSettingFragment extends Fragment {
@@ -32,6 +37,8 @@ public class GroupSettingFragment extends Fragment {
     private static final String ARG_GROUP_ID = "group_id";
     private String groupName;
     private String groupId;
+    private MemberAdapter adapter;
+    private final List<User> members = new ArrayList<>();
 
     public static GroupSettingFragment newInstance(String groupId, String groupName) {
         GroupSettingFragment fragment = new GroupSettingFragment();
@@ -64,6 +71,9 @@ public class GroupSettingFragment extends Fragment {
 
         b.groupName.setText(groupName);
 
+        setupRecyclerView();
+        loadGroupMembers();
+
         setupClickListeners();
 
     }
@@ -74,6 +84,83 @@ public class GroupSettingFragment extends Fragment {
         });
 
         b.addMember.setOnClickListener(v -> showAddMemberDialog());
+    }
+
+    private void setupRecyclerView(){
+        adapter = new MemberAdapter(members, member -> {
+            removeMemberFromGroup(member.getUid());
+        });
+
+        b.membersList.setLayoutManager(new LinearLayoutManager(requireContext()));
+        b.membersList.setAdapter(adapter);
+    }
+
+    private void loadGroupMembers() {
+        FirebaseHelper.getGroupMembers(groupId, new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                members.clear();
+                for (DataSnapshot memberSnapshot : snapshot.getChildren()) {
+                    String userId = memberSnapshot.getKey();
+                    // Fetch user details
+                    FirebaseHelper.getUserDetails(userId, new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                            User user = userSnapshot.getValue(User.class);
+                            if (user != null) {
+                                user.setUid(userId);
+                                members.add(user);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(requireContext(),
+                                    "Failed to load user: " + error.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(requireContext(),
+                        "Failed to load members: " + error.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void removeMemberFromGroup(String userId) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Remove Member")
+                .setMessage("Are you sure you want to remove this member?")
+                .setPositiveButton("Remove", (dialog, which) -> {
+                    // Remove from group's members list
+                    FirebaseHelper.removeGroupMember(groupId, userId, (error, ref) -> {
+                        if (error == null) {
+                            // Remove group from user's group list
+                            FirebaseHelper.removeGroupFromUser(userId, groupId, (userError, userRef) -> {
+                                if (userError == null) {
+                                    Toast.makeText(requireContext(),
+                                            "Member removed", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(requireContext(),
+                                            "Failed to update user: " + userError.getMessage(),
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            Toast.makeText(requireContext(),
+                                    "Failed to remove member: " + error.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void showAddMemberDialog() {

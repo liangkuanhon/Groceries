@@ -145,5 +145,21 @@ public class FirebaseHelper {
         groupItemsReference(groupId).child(itemId).removeValue(listener);
     }
 
+    public static void getGroupMembers(String groupId, ValueEventListener listener) {
+        groupsReference.child(groupId).child("members").addListenerForSingleValueEvent(listener);
+    }
+
+    public static void getUserDetails(String userId, ValueEventListener listener) {
+        userReference.child(userId).addListenerForSingleValueEvent(listener);
+    }
+
+    public static void removeGroupMember(String groupId, String userId, DatabaseReference.CompletionListener listener) {
+        groupsReference.child(groupId).child("members").child(userId).removeValue(listener);
+    }
+
+    public static void removeGroupFromUser(String userId, String groupId, DatabaseReference.CompletionListener listener) {
+        userReference.child(userId).child("groups").child(groupId).removeValue(listener);
+    }
+
 
 }
