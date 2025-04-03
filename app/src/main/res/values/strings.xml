@@ -1,5 +1,5 @@
 <resources>
-
+    <!-- string resources misc -->
     <string name="app_name">NestCart</string>
 
     <!-- string resources login activity -->
@@ -12,8 +12,6 @@
     <string name="email">Email</string>
     <string name="username">Username</string>
     <string name="reconfirm">Reconfirm Password</string>
-    <string name="already">Already have an account?</string>
-    <string name="signup_underline"><u>Log In</u></string>
     <string name="tagline">Nest Your Cart. List Your Heart.</string>
 
     <!-- string resources name activity -->
@@ -26,7 +24,7 @@
     <string name="hi">Hi</string>
     <string name="home">Home</string>
     <string name="activity">Activity</string>
-    <string name="group">Groups</string>
+    <string name="message">Messages</string>
     <string name="profile">Profile</string>
 
     <!-- string resources profile activity -->
@@ -45,19 +43,10 @@
     <!-- string resources profile activity -->
     <string name="edit">Edit Profile</string>
     <string name="save">Save Profile</string>
-    <string name="back_button_description">Navigate back</string>
 
     <!-- string resources create group activity -->
-    <string name="create_group">Create a group</string>
-    <string name="done">Done</string>
+    <string name="create_group">Create Group</string>
     <string name="enter_group_name">Enter Group Name</string>
     <string name="group_name">Group Name</string>
-
-    <!-- string resources single group activity -->
-    <string name="last">last edited</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="previous">Previous</string>
 
 </resources>

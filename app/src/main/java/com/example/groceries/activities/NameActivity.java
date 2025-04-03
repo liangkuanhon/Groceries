@@ -1,5 +1,7 @@
 package com.example.groceries.activities;
 
+import static android.content.Intent.getIntent;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
