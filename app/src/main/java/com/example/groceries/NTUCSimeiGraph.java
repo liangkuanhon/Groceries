@@ -1,6 +1,10 @@
 package com.example.groceries;
 
 public class NTUCSimeiGraph extends SupermarketGraph {
+    static{
+        //load simei graph onto factory upon each runtime
+        SupermarketFactory.registerSupermarket("ntuc simei", NTUCSimeiGraph::new);
+    }
     public NTUCSimeiGraph() {
         super();
         createGraph();
