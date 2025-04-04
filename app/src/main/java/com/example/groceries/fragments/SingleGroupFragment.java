@@ -105,15 +105,7 @@ public class SingleGroupFragment extends Fragment {
 
         b.settings.setOnClickListener(v -> navigateToGroupSettings(groupId, groupName));
 
-        // Navigate to ShopsFragment when checkout button is clicked
-        b.checkout.setOnClickListener(v -> {
-            ShopsFragment shopsFragment = new ShopsFragment(); // Ensure this fragment exists
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main_frame, shopsFragment)
-                    .addToBackStack("SingleFragment")
-                    .commit();
-        });
+
     }
 
     private void setupRecyclerView(){
