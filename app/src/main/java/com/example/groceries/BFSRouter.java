@@ -4,17 +4,6 @@ import android.util.Log;
 import java.util.*;
 
 public class BFSRouter {
-    public static void main(String[] args){
-        //test code
-        SupermarketGraph supermarket = SupermarketFactory.getSupermarketGraph("ntuc simei");
-        BFSRouter router = new BFSRouter(supermarket);
-
-        ArrayList<String> shoppingList = new ArrayList<>(Arrays.asList("Dairy", "Seafood"));
-
-        ArrayList<String> route = router.greedyBFSRouting(shoppingList);
-
-        Log.d("BFSRoute", "Route: " + route.toString());
-    }
     private Graph graph;
 
     public BFSRouter(Graph graph) {
@@ -61,7 +50,7 @@ public class BFSRouter {
                 shoppingList.remove(foundItem);
                 currentLocation = foundItem;
             } else {
-                break; // No more reachable items
+                break; // No more reachable items, proceed to checkout
             }
         }
 
@@ -72,7 +61,7 @@ public class BFSRouter {
 
     private List<String> reconstructPath(String start, String end, Map<String, String> parent) {
         List<String> path = new ArrayList<>();
-        for (String at = end; at != null; at = parent.get(at)) {
+        for (String at = end; at != null /*while parent is not null, keep looping*/; at = parent.get(at))/*current = current.parent equivalent*/ {
             path.add(at);
         }
         Collections.reverse(path);

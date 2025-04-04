@@ -3,7 +3,7 @@ package com.example.groceries;
 import java.util.*;
 
 public class SupermarketGraph implements Graph {
-    private Map<String, List<String>> adjacencyList;
+    private static Map<String, List<String>> adjacencyList;
 
     public SupermarketGraph() {
         this.adjacencyList = new HashMap<>();

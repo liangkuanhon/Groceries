@@ -1,5 +1,13 @@
 package com.example.groceries.activities;
 
+
+import com.example.groceries.BFSRouter;
+import com.example.groceries.SupermarketFactory;
+import com.example.groceries.SupermarketGraph;
+import java.util.*;
+import android.util.Log;
+
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -31,6 +39,32 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //test code ===============
+        try {
+            Class.forName("com.example.groceries.supermarkets.NTUCSimeiGraph");
+            SupermarketGraph supermarket = SupermarketFactory.getSupermarketGraph("ntuc simei");
+
+            if (supermarket == null) {
+                Log.e("BFSRoute", "SupermarketGraph returned null for 'ntuc simei'");
+                return;  // prevent crash by exiting early
+            }
+
+            BFSRouter router = new BFSRouter(supermarket);
+
+            ArrayList<String> shoppingList = new ArrayList<>(Arrays.asList("Dairy", "Seafood", "Canned Goods"));
+            ArrayList<String> route = router.greedyBFSRouting(shoppingList);
+
+            if (route == null) {
+                Log.e("BFSRoute", "Route came back null!");
+            } else {
+                Log.d("BFSRoute", "Route: " + route.toString());
+            }
+        } catch (Exception e) {
+            Log.e("BFSRoute", "Caught exception: ", e);
+        }
+
+        //test code ===============
 
         // Initialize View Binding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
