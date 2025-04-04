@@ -46,8 +46,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         b.createGroupButton.setOnClickListener(v -> createGroup());
 
         b.cancel.setOnClickListener(view -> {
-            Intent intent = new Intent(CreateGroupActivity.this, LoginActivity.class);
-            startActivity(intent);
+            finish();
         });
     }
 
