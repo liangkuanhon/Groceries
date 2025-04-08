@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.groceries.R;
-import com.example.groceries.activities.User;
+import com.example.groceries.User;
 import com.example.groceries.databinding.ItemGroupMemberBinding;
 
 import java.util.List;

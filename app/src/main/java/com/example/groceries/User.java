@@ -1,4 +1,4 @@
-package com.example.groceries.activities;
+package com.example.groceries;
 
 public class User {
     private String uid;
