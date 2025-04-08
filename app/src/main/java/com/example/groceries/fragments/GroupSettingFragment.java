@@ -15,11 +15,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.groceries.R;
-import com.example.groceries.activities.User;
+import com.example.groceries.User;
 import com.example.groceries.adapter.MemberAdapter;
 import com.example.groceries.databinding.FragmentGroupSettingBinding;
-import com.example.groceries.databinding.FragmentSingleGroupBinding;
 import com.example.groceries.helper.FirebaseHelper;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

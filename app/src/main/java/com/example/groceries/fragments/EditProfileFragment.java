@@ -16,6 +16,7 @@ import com.example.groceries.R;
 import com.example.groceries.databinding.FragmentEditProfileBinding;
 import com.example.groceries.databinding.FragmentProfileBinding;
 import com.example.groceries.helper.FirebaseHelper;
+import com.example.groceries.helper.NavigationHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 public class EditProfileFragment extends Fragment {
 
     private FragmentEditProfileBinding b;
+    private NavigationHelper navigationHelper;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -37,14 +39,13 @@ public class EditProfileFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        b.backButton.setOnClickListener(v -> {
-            navigateToProfile();
-        });
+        navigationHelper = new NavigationHelper(requireActivity(), R.id.main_frame);
 
-        b.saveProfile.setOnClickListener(v -> {
-            navigateToProfile();
-        });
+        setupClickListeners();
+        loadUserData();
+    }
 
+    private void loadUserData(){
         FirebaseHelper.fetchUserDetails(FirebaseHelper.getCurrentUserId(), new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -64,14 +65,15 @@ public class EditProfileFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to load user data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
-    private void navigateToProfile(){
-        ProfileFragment profileFragment = new ProfileFragment();
+    private void setupClickListeners() {
+        b.backButton.setOnClickListener(v -> navigateToProfile());
+        b.saveProfile.setOnClickListener(v -> navigateToProfile()); // add safe logic too when free
+    }
 
-        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.main_frame, profileFragment);
-        transaction.commit();
+    private void navigateToProfile() {
+        // Use NavigationHelper instead of direct FragmentTransaction
+        navigationHelper.navigateToFragment(new ProfileFragment());
     }
 }

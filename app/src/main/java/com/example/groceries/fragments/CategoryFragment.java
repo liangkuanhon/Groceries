@@ -18,6 +18,8 @@ import com.example.groceries.activities.ItemsActivity;
 import com.example.groceries.databinding.FragmentCategoryBinding;
 import com.example.groceries.databinding.FragmentSingleGroupBinding;
 
+import java.util.Arrays;
+
 
 public class CategoryFragment extends Fragment {
 
@@ -51,6 +53,7 @@ public class CategoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         String[] categories = GroceryData.getCategoryNames();
+        Arrays.sort(categories, String.CASE_INSENSITIVE_ORDER);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),

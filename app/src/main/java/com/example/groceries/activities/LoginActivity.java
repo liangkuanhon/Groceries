@@ -13,8 +13,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.groceries.R;
-import com.example.groceries.databinding.ActivityLoginBinding; // Import the generated binding class
+import com.example.groceries.databinding.ActivityLoginBinding;
 import com.example.groceries.helper.FirebaseHelper;
+import com.example.groceries.helper.NavigationHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,46 +29,54 @@ import android.content.SharedPreferences;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private NavigationHelper navigationHelper;
     private FirebaseAuth auth;
-    private ActivityLoginBinding binding; // Declare the binding variable
+    private ActivityLoginBinding b; // Declare the b variable
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialize View Binding
-        binding = ActivityLoginBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        initialise();
+        setupEdgeToEdge();
+        setupClickListeners();
 
+    }
+
+    private void initialise(){
+        auth = FirebaseAuth.getInstance();
+        b = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(b.getRoot());
+        navigationHelper = new NavigationHelper(this);
+    }
+
+    private void setupEdgeToEdge(){
         EdgeToEdge.enable(this);
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(b.main, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
 
-        auth = FirebaseAuth.getInstance();
+    private void setupClickListeners(){
+        b.loginButton.setOnClickListener(view -> handleLogin());
+        b.signupButton.setOnClickListener(view -> navigateToSignup());
+    }
 
-        // Use binding to access views
-        binding.loginButton.setOnClickListener(view -> {
-            if (ValidInput() && ValidPassword()) {
-                String input = binding.loginInput.getText().toString().trim();
-                String password = binding.loginPassword.getText().toString().trim();
+    private void handleLogin(){
+        if (ValidInput() && ValidPassword()) {
+            String input = b.loginInput.getText().toString().trim();
+            String password = b.loginPassword.getText().toString().trim();
 
-                if (isValidEmail(input)) {
-                    // If input is an email, log in directly
-                    loginWithEmail(input, password);
-                } else {
-                    // If input is a username, look up the email in the database
-                    loginWithUsername(input, password);
-                }
+            if (isValidEmail(input)) {
+                // If input is an email, log in directly
+                loginWithEmail(input, password);
+            } else {
+                // If input is a username, look up the email in the database
+                loginWithUsername(input, password);
             }
-        });
-
-        binding.signupButton.setOnClickListener(view -> {
-            Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-            startActivity(intent);
-        });
+        }
     }
 
     private boolean isValidEmail(String input) {
@@ -75,25 +84,25 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private Boolean ValidInput() {
-        String input = binding.loginInput.getText().toString();
+        String input = b.loginInput.getText().toString();
         if (input.isEmpty()) {
-            binding.loginInput.setError("Input cannot be empty");
-            binding.loginInput.requestFocus();
+            b.loginInput.setError("Input cannot be empty");
+            b.loginInput.requestFocus();
             return false;
         } else {
-            binding.loginInput.setError(null);
+            b.loginInput.setError(null);
             return true;
         }
     }
 
     private Boolean ValidPassword() {
-        String password = binding.loginPassword.getText().toString();
+        String password = b.loginPassword.getText().toString();
         if (password.isEmpty()) {
-            binding.loginPassword.setError("Password cannot be empty");
-            binding.loginPassword.requestFocus();
+            b.loginPassword.setError("Password cannot be empty");
+            b.loginPassword.requestFocus();
             return false;
         } else {
-            binding.loginPassword.setError(null);
+            b.loginPassword.setError(null);
             return true;
         }
     }
@@ -143,13 +152,13 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                     if (!userFound) {
-                        binding.loginInput.setError("Username does not exist");
-                        binding.loginInput.requestFocus();
+                        b.loginInput.setError("Username does not exist");
+                        b.loginInput.requestFocus();
                     }
                 } else {
                     // If the snapshot does not exist at all
-                    binding.loginInput.setError("Username does not exist");
-                    binding.loginInput.requestFocus();
+                    b.loginInput.setError("Username does not exist");
+                    b.loginInput.requestFocus();
                 }
             }
 
@@ -158,6 +167,10 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void navigateToSignup(){
+        navigationHelper.navigateToActivityClearStack(SignupActivity.class);
     }
 
     @Override

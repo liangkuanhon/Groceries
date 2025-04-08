@@ -1,7 +1,6 @@
 package com.example.groceries.activities;
 
 import android.os.Bundle;
-import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.widget.Toast;
@@ -13,146 +12,167 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.groceries.R;
-import com.example.groceries.databinding.ActivitySignupBinding; // Import the generated binding class
+import com.example.groceries.databinding.ActivitySignupBinding; // Import the generated b class
 import com.example.groceries.helper.FirebaseHelper;
-import com.example.groceries.helper.HelperClass;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.button.MaterialButton;
+import com.example.groceries.helper.UserHelper;
+import com.example.groceries.helper.NavigationHelper;
 
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 public class SignupActivity extends AppCompatActivity {
 
+    // Decalre dependencies
     private FirebaseAuth auth;
-    private FirebaseDatabase database;
-    private DatabaseReference reference;
-    private ActivitySignupBinding binding; // Declare the binding variable
+    private ActivitySignupBinding b;
+    private NavigationHelper navigationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialize View Binding
-        binding = ActivitySignupBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        initialise();
+        setupEdgeToEdge();
+        setupClickListeners();
+    }
 
+    private void initialise(){
+        auth = FirebaseAuth.getInstance();
+        b = ActivitySignupBinding.inflate(getLayoutInflater());
+        setContentView(b.getRoot());
+        navigationHelper = new NavigationHelper(this);
+    }
+
+    // set up UI
+    private void setupEdgeToEdge(){
         EdgeToEdge.enable(this);
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(b.main, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
 
-        auth = FirebaseAuth.getInstance();
+    private void setupClickListeners(){
+        b.loginLink.setOnClickListener(view -> navigateToLogin());
+        b.signupButton.setOnClickListener(view -> handleSignUp());
+    }
 
-        binding.loginLink.setOnClickListener(view -> {
-            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-            startActivity(intent);
+    private void handleSignUp() {
+        String email = b.signupEmail.getText().toString().trim();
+        String username = b.signupUsername.getText().toString().trim();
+        String password = b.signupPassword.getText().toString().trim();
+        String reconfirmPassword = b.signupReconfirmPassword.getText().toString().trim();
+
+        if (!validateInputs(email, username, password, reconfirmPassword)) {
+            return;
+        }
+
+        checkUsernameAndRegister(username, email, password);
+    }
+
+    private boolean validateInputs(String email, String username, String password, String reconfirmPassword) {
+        // Validate email
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            b.signupEmail.setError("Please enter a valid email address");
+            b.signupEmail.requestFocus();
+            return false;
+        }
+
+        // Check for empty fields
+        if (TextUtils.isEmpty(email)) {
+            b.signupEmail.setError("Email is required");
+            b.signupEmail.requestFocus();
+            return false;
+        }
+        if (TextUtils.isEmpty(username)) {
+            b.signupUsername.setError("Username is required");
+            b.signupUsername.requestFocus();
+            return false;
+        }
+        if (TextUtils.isEmpty(password)) {
+            b.signupPassword.setError("Password is required");
+            b.signupPassword.requestFocus();
+            return false;
+        }
+
+        // Check password length
+        if (password.length() < 6) {
+            b.signupPassword.setError("Password must be at least 6 characters long");
+            b.signupPassword.requestFocus();
+            return false;
+        }
+
+        // Check if passwords match
+        if (!password.equals(reconfirmPassword)) {
+            b.signupReconfirmPassword.setError("Passwords do not match!");
+            b.signupReconfirmPassword.requestFocus();
+            return false;
+        }
+        return true;
+    }
+
+    private void checkUsernameAndRegister(String username, String email, String password) {
+        FirebaseHelper.checkUsernameExists(username, new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    b.signupUsername.setError("Username is already taken");
+                    b.signupUsername.requestFocus();
+                } else {
+                    registerNewUser(email, password, username);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                showError("Failed to check username availability");
+            }
         });
+    }
 
-        // Set up the signup button click listener
-        binding.signupButton.setOnClickListener(view -> {
-            database = FirebaseDatabase.getInstance();
-            reference = database.getReference("users");
-
-            String email = binding.signupEmail.getText().toString();
-            String username = binding.signupUsername.getText().toString();
-            String password = binding.signupPassword.getText().toString();
-            String reconfirmPassword = binding.signupReconfirmPassword.getText().toString();
-
-            // Validate email
-            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                binding.signupEmail.setError("Please enter a valid email address");
-                binding.signupEmail.requestFocus();
-                return;
-            }
-
-            // Check for empty fields
-            if (TextUtils.isEmpty(email)) {
-                binding.signupEmail.setError("Email is required");
-                binding.signupEmail.requestFocus();
-                return;
-            }
-            if (TextUtils.isEmpty(username)) {
-                binding.signupUsername.setError("Username is required");
-                binding.signupUsername.requestFocus();
-                return;
-            }
-            if (TextUtils.isEmpty(password)) {
-                binding.signupPassword.setError("Password is required");
-                binding.signupPassword.requestFocus();
-                return;
-            }
-
-            // Check password length
-            if (password.length() < 6) {
-                binding.signupPassword.setError("Password must be at least 6 characters long");
-                binding.signupPassword.requestFocus();
-                return;
-            }
-
-            // Check if passwords match
-            if (!password.equals(reconfirmPassword)) {
-                binding.signupReconfirmPassword.setError("Passwords do not match!");
-                binding.signupReconfirmPassword.requestFocus();
-                return;
-            }
-
-            // Check if username exists in the database
-            FirebaseHelper.checkUsernameExists(username, new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        // Username already exists
-                        binding.signupUsername.setError("Username is already taken");
-                        binding.signupUsername.requestFocus();
+    private void registerNewUser(String email, String password, String username) {
+        auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = auth.getCurrentUser();
+                        if (user != null) {
+                            saveUserToFirebase(user.getUid(), email, username, password);
+                        }
                     } else {
-                        // Create user with Firebase Authentication
-                        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    FirebaseUser user = auth.getCurrentUser();
-                                    if (user != null) {
-                                        String uid = user.getUid();
-
-                                        // Create a user object
-                                        HelperClass newUser = new HelperClass(email, username, password);
-
-                                        // Add the user to the database
-                                        FirebaseHelper.addUser(uid, newUser, (error, ref) -> {
-                                            if (error == null) {
-                                                Toast.makeText(SignupActivity.this, "User registered successfully!", Toast.LENGTH_SHORT).show();
-                                                Intent intent = new Intent(SignupActivity.this, NameActivity.class);
-                                                intent.putExtra("UID", uid);
-                                                startActivity(intent);
-                                            } else {
-                                                Toast.makeText(SignupActivity.this, "Failed to register user: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    }
-                                } else {
-                                    Toast.makeText(SignupActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                        showError("Registration failed: " + task.getException().getMessage());
                     }
-                }
+                });
+    }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Toast.makeText(SignupActivity.this, "Failed to check username availability", Toast.LENGTH_SHORT).show();
-                }
-            });
+    private void saveUserToFirebase(String uid, String email, String username, String password) {
+        UserHelper newUser = new UserHelper(email, username, password);
+        FirebaseHelper.addUser(uid, newUser, (error, ref) -> {
+            if (error == null) {
+                showSuccess("User registered successfully!");
+                navigateToNameActivity(uid);
+            } else {
+                showError("Failed to register user: " + error.getMessage());
+            }
         });
+    }
+
+    private void showSuccess(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void navigateToNameActivity(String uid) {
+        navigationHelper.navigateToActivityClearStack(NameActivity.class);
+    }
+
+    private void navigateToLogin() {
+        navigationHelper.navigateToActivity(LoginActivity.class);
     }
 }

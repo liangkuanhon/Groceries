@@ -1,13 +1,13 @@
 package com.example.groceries.helper;
 
-public class HelperClass {
+public class UserHelper {
 
     String email, username, password, name;
 
-    public HelperClass(){
+    public UserHelper(){
     }
 
-    public HelperClass(String email, String username, String password) {
+    public UserHelper(String email, String username, String password) {
         this.email = email;
         this.username = username;
         this.password = password;
