@@ -177,7 +177,7 @@ public class GroceryData {
             put("Lasagna Sheets", R.drawable.product_lasagna_sheets);
             put("Macaroni", R.drawable.product_macaroni);
             put("Spaghetti", R.drawable.product_spaghetti);
-            put("Instant Noodles", R.drawable.product_instant_noodles;
+            put("Instant Noodles", R.drawable.product_instant_noodles);
         }});
         put("Personal Care", new HashMap<String, Integer>(){{
             put("Body Wash", R.drawable.product_body_wash);
