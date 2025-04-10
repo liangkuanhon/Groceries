@@ -55,20 +55,17 @@ public class ProfileFragment extends Fragment {
     private void setupClickListeners() {
         b.profileImage.setOnClickListener(v -> navigateToEditProfile());
 
-        b.settings.setOnClickListener(v -> {
-            Intent intent = new Intent(requireActivity(), GroupViewActivity.class);
-            startActivity(intent);
-        });
+        b.settings.setOnClickListener(v ->
+            Toast.makeText(getContext(), "Settings Clicked!", Toast.LENGTH_SHORT).show()
+        );
 
-        b.language.setOnClickListener(v -> {
-            Intent intent = new Intent(requireActivity(), CategoryActivity.class);
-            startActivity(intent);
-        });
+        b.language.setOnClickListener(v ->
+            Toast.makeText(getContext(), "Language Clicked!", Toast.LENGTH_SHORT).show()
+        );
 
-        b.favourites.setOnClickListener(v -> {
-            Intent intent = new Intent(requireActivity(), GroceryListActivity.class);
-            startActivity(intent);
-        });
+        b.favourites.setOnClickListener(v ->
+            Toast.makeText(getContext(), "Favourites Clicked!", Toast.LENGTH_SHORT).show()
+        );
 
         b.contact.setOnClickListener(v ->
                 Toast.makeText(getContext(), "Contact Clicked!", Toast.LENGTH_SHORT).show()

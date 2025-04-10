@@ -15,8 +15,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.groceries.GroceryData;
 import com.example.groceries.R;
+import com.example.groceries.databinding.ActivityCategoryBinding;
 
 public class CategoryActivity extends AppCompatActivity {
+
+    private ActivityCategoryBinding b;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

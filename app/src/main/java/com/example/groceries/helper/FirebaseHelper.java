@@ -25,22 +25,6 @@ public class FirebaseHelper {
         groupsReference = database.getReference("groups");
     }
 
-
-//    public static void init() {
-//        if (database == null) {
-//            database = FirebaseDatabase.getInstance();
-//        }
-//        if (reference == null) {
-//            reference = database.getReference("users");
-//        }
-//    }
-
-    // Get user reference
-//    public static DatabaseReference getUserReference() {
-//        init();
-//        return reference;
-//    }
-
     // Get current user UID
     public static String getCurrentUserId() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -66,7 +50,7 @@ public class FirebaseHelper {
     }
 
     // Add a new user to the database using UID as key
-    public static void addUser(String uid, HelperClass user, DatabaseReference.CompletionListener listener) {
+    public static void addUser(String uid, UserHelper user, DatabaseReference.CompletionListener listener) {
         userReference.child(uid).setValue(user, listener);
     }
 
