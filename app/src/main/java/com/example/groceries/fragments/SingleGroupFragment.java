@@ -87,6 +87,8 @@ public class SingleGroupFragment extends Fragment {
         getItemsFromFirebase();
     }
 
+
+
     private void setupClickListeners() {
         b.backArrow.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager().popBackStackImmediate();
@@ -102,6 +104,8 @@ public class SingleGroupFragment extends Fragment {
         });
 
         b.settings.setOnClickListener(v -> navigateToGroupSettings(groupId, groupName));
+
+
     }
 
     private void setupRecyclerView(){
@@ -169,5 +173,7 @@ public class SingleGroupFragment extends Fragment {
                 .addToBackStack("SingleFragment")
                 .commit();
     }
+
+
 
 }
