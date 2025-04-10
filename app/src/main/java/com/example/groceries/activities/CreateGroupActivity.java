@@ -51,6 +51,9 @@ public class CreateGroupActivity extends AppCompatActivity {
     }
 
     private void createGroup() {
+
+        b.createGroupButton.setEnabled(false);
+
         String groupName = b.groupNameInput.getText().toString().trim();
         String userId = FirebaseHelper.getCurrentUserId();
 
@@ -91,8 +94,16 @@ public class CreateGroupActivity extends AppCompatActivity {
                         Toast.makeText(CreateGroupActivity.this, "Group created!", Toast.LENGTH_SHORT).show();
                         finish(); // Close activity
 
-                        Intent intent = new Intent(CreateGroupActivity.this, GroupViewActivity.class);
+                        Intent intent = new Intent(CreateGroupActivity.this, MainActivity.class);
+                        // instructions for MainActivity to open SingleGroupFragment with the relevant data
+                        intent.putExtra("openFragment", "singleGroup");
+                        intent.putExtra("groupId", groupId);
+                        intent.putExtra("groupName", groupName);
+
+                        // Clear back stack and start fresh
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
+                        finish();
                     } else {
                         Toast.makeText(CreateGroupActivity.this, "Failed to add group to user", Toast.LENGTH_SHORT).show();
                         Log.e("CreateGroupActivity", "Error: " + userError.getMessage());

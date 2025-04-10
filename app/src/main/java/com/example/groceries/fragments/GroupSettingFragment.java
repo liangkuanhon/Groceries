@@ -1,5 +1,6 @@
 package com.example.groceries.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -71,7 +73,6 @@ public class GroupSettingFragment extends Fragment {
 
         setupRecyclerView();
         loadGroupMembers();
-
         setupClickListeners();
 
     }
@@ -85,8 +86,10 @@ public class GroupSettingFragment extends Fragment {
     }
 
     private void setupRecyclerView(){
+        String currentUserId = FirebaseHelper.getCurrentUserId();
+
         adapter = new MemberAdapter(members, member -> {
-            removeMemberFromGroup(member.getUid());
+            showLeaveOrRemoveDialog(member);
         });
 
         b.membersList.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -131,34 +134,52 @@ public class GroupSettingFragment extends Fragment {
         });
     }
 
-    private void removeMemberFromGroup(String userId) {
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Remove Member")
-                .setMessage("Are you sure you want to remove this member?")
-                .setPositiveButton("Remove", (dialog, which) -> {
-                    // Remove from group's members list
-                    FirebaseHelper.removeGroupMember(groupId, userId, (error, ref) -> {
-                        if (error == null) {
-                            // Remove group from user's group list
-                            FirebaseHelper.removeGroupFromUser(userId, groupId, (userError, userRef) -> {
-                                if (userError == null) {
-                                    Toast.makeText(requireContext(),
-                                            "Member removed", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(requireContext(),
-                                            "Failed to update user: " + userError.getMessage(),
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            });
+    private void showLeaveOrRemoveDialog(User member) {
+        boolean isCurrentUser = member.getUid().equals(FirebaseHelper.getCurrentUserId());
+
+        AlertDialog alertDialog = new  AlertDialog.Builder(requireContext())
+            .setTitle(isCurrentUser ? "Leave Group?" : "Remove Member")
+            .setMessage(isCurrentUser
+                    ? "Are you sure you want to leave this group?"
+                    : "Are you sure you want to remove this member?")
+            .setPositiveButton(isCurrentUser ? "Leave" : "Remove", (dialog, which) -> {
+                removeUserFromGroup(member.getUid(), isCurrentUser);
+            })
+            .setNegativeButton("Cancel", null)
+            .create();
+
+        alertDialog.setOnShowListener(d -> {
+            Button positiveButton = ((AlertDialog) d).getButton(AlertDialog.BUTTON_POSITIVE);
+            Button negativeButton = ((AlertDialog) d).getButton(AlertDialog.BUTTON_NEGATIVE);
+
+            positiveButton.setTextColor(Color.RED);
+            negativeButton.setTextColor(Color.BLACK);
+        });
+        alertDialog.show();
+    }
+
+    private void removeUserFromGroup(String userId, boolean isCurrentUser) {
+        FirebaseHelper.removeGroupMember(groupId, userId, (error, ref) -> {
+            if (error == null) {
+                FirebaseHelper.removeGroupFromUser(userId, groupId, (userError, userRef) -> {
+                    if (userError == null) {
+                        String message = isCurrentUser ? "You left the group" : "Member removed";
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+
+                        if (isCurrentUser) {
+                            requireActivity().onBackPressed();
                         } else {
-                            Toast.makeText(requireContext(),
-                                    "Failed to remove member: " + error.getMessage(),
-                                    Toast.LENGTH_SHORT).show();
+                            loadGroupMembers();
                         }
-                    });
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
+                    } else {
+                        showError("Failed to update user: " + userError.getMessage());
+                    }
+                });
+            } else {
+                showError("Failed to " + (isCurrentUser ? "leave group" : "remove member") +
+                        ": " + error.getMessage());
+            }
+        });
     }
 
     private void showAddMemberDialog() {
@@ -198,15 +219,13 @@ public class GroupSettingFragment extends Fragment {
                         return;
                     }
                 } else {
-                    Toast.makeText(requireContext(),
-                            "User not found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(requireContext(),
-                        "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -221,19 +240,19 @@ public class GroupSettingFragment extends Fragment {
                 // Also add group to user's group list
                 FirebaseHelper.addGroupToUser(userId, groupId, (userError, userRef) -> {
                     if (userError == null) {
-                        Toast.makeText(requireContext(),
-                                "Member added successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Member added successfully", Toast.LENGTH_SHORT).show();
+                        loadGroupMembers();
                     } else {
-                        Toast.makeText(requireContext(),
-                                "Failed to update user's groups: " + userError.getMessage(),
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Failed to update user's groups: " + userError.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
             } else {
-                Toast.makeText(requireContext(),
-                        "Failed to add member: " + error.getMessage(),
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Failed to add member: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showError(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

@@ -14,8 +14,8 @@ import com.example.groceries.databinding.ItemGroupMemberBinding;
 import java.util.List;
 
 public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberViewHolder> {
-    private final List<User> members;
-    private final OnMemberClickListener listener;
+    private List<User> members;
+    private OnMemberClickListener listener;
 
     public interface OnMemberClickListener {
         void onMemberClick(User member);
@@ -60,5 +60,11 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
             // Set click listeners
             itemView.setOnClickListener(v -> listener.onMemberClick(member));
         }
+    }
+
+    public void updateMembers(List<User> newMembers) {
+        this.members.clear();
+        this.members.addAll(newMembers);
+        notifyDataSetChanged();
     }
 }
