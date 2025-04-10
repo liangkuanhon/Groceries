@@ -25,22 +25,6 @@ public class FirebaseHelper {
         groupsReference = database.getReference("groups");
     }
 
-
-//    public static void init() {
-//        if (database == null) {
-//            database = FirebaseDatabase.getInstance();
-//        }
-//        if (reference == null) {
-//            reference = database.getReference("users");
-//        }
-//    }
-
-    // Get user reference
-//    public static DatabaseReference getUserReference() {
-//        init();
-//        return reference;
-//    }
-
     // Get current user UID
     public static String getCurrentUserId() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -66,7 +50,7 @@ public class FirebaseHelper {
     }
 
     // Add a new user to the database using UID as key
-    public static void addUser(String uid, HelperClass user, DatabaseReference.CompletionListener listener) {
+    public static void addUser(String uid, UserHelper user, DatabaseReference.CompletionListener listener) {
         userReference.child(uid).setValue(user, listener);
     }
 
@@ -143,6 +127,22 @@ public class FirebaseHelper {
 
     public static void removeGroupItem(String groupId, String itemId, DatabaseReference.CompletionListener listener) {
         groupItemsReference(groupId).child(itemId).removeValue(listener);
+    }
+
+    public static void getGroupMembers(String groupId, ValueEventListener listener) {
+        groupsReference.child(groupId).child("members").addListenerForSingleValueEvent(listener);
+    }
+
+    public static void getUserDetails(String userId, ValueEventListener listener) {
+        userReference.child(userId).addListenerForSingleValueEvent(listener);
+    }
+
+    public static void removeGroupMember(String groupId, String userId, DatabaseReference.CompletionListener listener) {
+        groupsReference.child(groupId).child("members").child(userId).removeValue(listener);
+    }
+
+    public static void removeGroupFromUser(String userId, String groupId, DatabaseReference.CompletionListener listener) {
+        userReference.child(userId).child("groups").child(groupId).removeValue(listener);
     }
 
 

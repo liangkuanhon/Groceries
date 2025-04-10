@@ -37,7 +37,7 @@ public class GroceryListActivity extends AppCompatActivity {
 
             ArrayAdapter<GroceryItem> adapter = new ArrayAdapter<GroceryItem>(
                     this,
-                    R.layout.grocery_list_item,
+                    R.layout.item_grocery_list,
                     R.id.itemName,
                     groceryList
             ) {

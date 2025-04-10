@@ -17,6 +17,7 @@ import com.example.groceries.fragments.ActivityFragment;
 import com.example.groceries.fragments.AllGroupFragment;
 import com.example.groceries.fragments.HomeFragment;
 import com.example.groceries.fragments.ProfileFragment;
+import com.example.groceries.fragments.SingleGroupFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -71,5 +72,32 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent != null && intent.hasExtra("openFragment")) {
+            String fragmentToOpen = intent.getStringExtra("openFragment");
+
+            if ("singleGroup".equals(fragmentToOpen)) {
+                String groupId = intent.getStringExtra("groupId");
+                String groupName = intent.getStringExtra("groupName");
+
+                // Open SingleGroupFragment
+                SingleGroupFragment fragment = SingleGroupFragment.newInstance(groupId, groupName);
+
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_frame, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        }
     }
 }

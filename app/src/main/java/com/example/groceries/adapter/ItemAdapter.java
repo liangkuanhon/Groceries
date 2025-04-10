@@ -19,14 +19,31 @@ import com.example.groceries.helper.FirebaseHelper;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 public class ItemAdapter extends ArrayAdapter<Map.Entry<String, Integer>> {
 
     private String groupId;
+
     public ItemAdapter(@NonNull Context context, Map<String, Integer> items, String groupId) {
-        super(context, 0, items.entrySet().toArray(new Map.Entry[0]));
+        // Convert map entries to a list and sort them
+        super(context, 0, sortEntries(new ArrayList<>(items.entrySet())));
         this.groupId = groupId;
+    }
+
+    // Helper method to sort entries alphabetically by key (case-insensitive)
+    private static List<Map.Entry<String, Integer>> sortEntries(List<Map.Entry<String, Integer>> entries) {
+        Collections.sort(entries, new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Map.Entry<String, Integer> e1, Map.Entry<String, Integer> e2) {
+                return e1.getKey().compareToIgnoreCase(e2.getKey());
+            }
+        });
+        return entries;
     }
 
     @NonNull
@@ -65,14 +82,4 @@ public class ItemAdapter extends ArrayAdapter<Map.Entry<String, Integer>> {
 
         return convertView;
     }
-
-//        convertView.setOnClickListener(v -> {
-//            GroceryItem groceryItem = new GroceryItem(item.getKey(), item.getValue());
-//            GroceryListManager.getInstance().addItem(groceryItem);
-//            Toast.makeText(getContext(),
-//                    item.getKey() + " added to list",
-//                    Toast.LENGTH_SHORT).show();
-//        });
-//
-//        return convertView;
 }
