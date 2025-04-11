@@ -39,9 +39,6 @@
         <activity
             android:name=".activities.MainActivity"
             android:exported="false" />
-        <activity
-            android:name=".activities.GroupViewActivity"
-            android:exported="false" />
         <activity android:name=".activities.CreateGroupActivity" />
     </application>
 

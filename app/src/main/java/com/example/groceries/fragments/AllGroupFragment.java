@@ -43,7 +43,7 @@ public class AllGroupFragment extends Fragment {
             "Couple Group",
             "Project Group",
             "Friend Group",
-            "Community Group"
+            "Work Group"
     );
 
     @Override
