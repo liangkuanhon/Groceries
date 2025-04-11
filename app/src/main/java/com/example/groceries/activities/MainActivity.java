@@ -1,12 +1,10 @@
 package com.example.groceries.activities;
 
-
 import com.example.groceries.BFSRouter;
 import com.example.groceries.SupermarketFactory;
 import com.example.groceries.SupermarketGraph;
 import java.util.*;
 import android.util.Log;
-
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,9 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.groceries.R;
 import com.example.groceries.databinding.ActivityMainBinding;
-import com.example.groceries.fragments.ActivityFragment;
 import com.example.groceries.fragments.AllGroupFragment;
-import com.example.groceries.fragments.HomeFragment;
 import com.example.groceries.fragments.ProfileFragment;
 import com.example.groceries.fragments.SingleGroupFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -32,8 +28,6 @@ import com.google.android.material.navigation.NavigationBarView;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    private HomeFragment homeFragment = new HomeFragment();
-    private ActivityFragment activityFragment = new ActivityFragment();
     private AllGroupFragment groupsFragment = new AllGroupFragment();
     private ProfileFragment profileFragment = new ProfileFragment();
 
@@ -41,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //test code ===============
+        // Test code ===============
         try {
             Class.forName("com.example.groceries.supermarkets.NTUCSimeiGraph");
             SupermarketGraph supermarket = SupermarketFactory.getSupermarketGraph("ntuc simei");
@@ -64,8 +58,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("BFSRoute", "Caught exception: ", e);
         }
-
-        //test code ===============
+        // Test code ===============
 
         // Initialize View Binding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -78,26 +71,21 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Use binding to reference views
-        BottomNavigationView bottomNavigationView = binding.mainBottomNavigation;
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, homeFragment).commit();
+        // Set default fragment
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, groupsFragment).commit();
 
+        // Bottom Navigation setup with 3 items
+        BottomNavigationView bottomNavigationView = binding.mainBottomNavigation;
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
-                if (itemId == R.id.home) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, homeFragment).commit();
-                    return true;
-                } else if (itemId == R.id.group) {
+                if (itemId == R.id.group) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, groupsFragment).commit();
                     return true;
                 } else if (itemId == R.id.add) {
                     Intent intent = new Intent(MainActivity.this, CreateGroupActivity.class);
                     startActivity(intent);
-                    return true;
-                } else if (itemId == R.id.activities) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, activityFragment).commit();
                     return true;
                 } else if (itemId == R.id.profile) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, profileFragment).commit();

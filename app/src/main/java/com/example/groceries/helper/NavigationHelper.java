@@ -35,6 +35,7 @@ public class NavigationHelper {
     public void navigateToActivityWithExtra(Class<?> targetActivity, String extraKey, String extraValue) {
         Intent intent = new Intent(context, targetActivity);
         intent.putExtra(extraKey, extraValue);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
     }
 

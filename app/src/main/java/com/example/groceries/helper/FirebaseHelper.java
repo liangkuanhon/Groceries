@@ -34,6 +34,11 @@ public class FirebaseHelper {
         return null; // No user is logged in
     }
 
+    // returns the database reference for our group
+    public static DatabaseReference getGroupsReference() {
+        return groupsReference;
+    }
+
     // Check if username exists
     public static void checkUsernameExists(String username, ValueEventListener listener) {
         userReference.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(listener);
