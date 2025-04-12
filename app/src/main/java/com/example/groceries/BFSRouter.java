@@ -14,54 +14,68 @@ public class BFSRouter {
         ArrayList<String> route = new ArrayList<>();
         String currentLocation = "Entrance";
 
-        while (!shoppingList.isEmpty()) {
-            Queue<String> queue = new ArrayDeque<>();
+        // Use a set for faster lookup
+        Set<String> targets = new HashSet<>(shoppingList);
+
+        while (!targets.isEmpty()) {
             Map<String, String> parent = new HashMap<>();
-            Set<String> visited = new HashSet<>();
-            String foundItem = null;
+            String found = bfsToClosestTarget(currentLocation, targets, parent);
 
-            queue.add(currentLocation);
-            visited.add(currentLocation);
+            if (found == null) break;
 
-            while (!queue.isEmpty() && foundItem == null) {
-                String current = queue.poll();
-                List<String> currentNeighbours = graph.getNeighbors(current);
-
-                for (String neighbour : currentNeighbours) {
-                    if (!visited.contains(neighbour)) {
-                        visited.add(neighbour);
-                        queue.add(neighbour);
-                        parent.put(neighbour, current);
-
-                        if (shoppingList.contains(neighbour)) {
-                            foundItem = neighbour;
-                            break;
-                        }
-                    }
-                }
+            List<String> path = reconstructPath(currentLocation, found, parent);
+            if (!route.isEmpty() && route.get(route.size() - 1).equals(path.get(0))) {
+                path.remove(0);
             }
 
-            if (foundItem != null) {
-                List<String> path = reconstructPath(currentLocation, foundItem, parent);
-                if (!route.isEmpty() && route.get(route.size() - 1).equals(path.get(0))) {
-                    path.remove(0);
-                }
-                route.addAll(path);
-                shoppingList.remove(foundItem);
-                currentLocation = foundItem;
-            } else {
-                break; // No more reachable items, proceed to checkout
-            }
+            route.addAll(path);
+            targets.remove(found);
+            currentLocation = found;
         }
 
-        //all items inside shopping list are added to the route. Append exit to route
-        route.add("Checkout");
+        // Add checkout as final stop
+        Map<String, String> parent = new HashMap<>();
+        String checkout = bfsToClosestTarget(currentLocation, Set.of("Checkout"), parent);
+        if (checkout != null) {
+            List<String> path = reconstructPath(currentLocation, checkout, parent);
+            if (!route.isEmpty() && route.get(route.size() - 1).equals(path.get(0))) {
+                path.remove(0);
+            }
+            route.addAll(path);
+        }
+
         return route;
     }
 
+    // BFS to nearest target in the set, filling parent map as it goes
+    private String bfsToClosestTarget(String start, Set<String> targets, Map<String, String> parent) {
+        Queue<String> queue = new ArrayDeque<>();
+        Set<String> visited = new HashSet<>();
+
+        queue.add(start);
+        visited.add(start);
+
+        while (!queue.isEmpty()) {
+            String current = queue.poll();
+            for (String neighbor : graph.getNeighbors(current)) {
+                if (!visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    queue.add(neighbor);
+                    parent.put(neighbor, current);
+                    if (targets.contains(neighbor)) {
+                        return neighbor;
+                    }
+                }
+            }
+        }
+
+        return null; // No reachable target
+    }
+
+    //reconstructing path by backtracking from end to start
     private List<String> reconstructPath(String start, String end, Map<String, String> parent) {
         List<String> path = new ArrayList<>();
-        for (String at = end; at != null /*while parent is not null, keep looping*/; at = parent.get(at))/*current = current.parent equivalent*/ {
+        for (String at = end; at != null; at = parent.get(at)) {
             path.add(at);
         }
         Collections.reverse(path);

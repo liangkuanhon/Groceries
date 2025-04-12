@@ -62,4 +62,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="recycler_view_description">List of supermarkets</string>
+    <string name="select_the_mart_you_want_to_shop_at">Please select the mart you want to shop at</string>
+    <string name="your_shopping_route" />
+    <string name="supermarket_map_image" />
+    <string name="supermarket_name" />
+    <string name="previouscapitalized">PREVIOUS</string>
+
 </resources>
