@@ -108,6 +108,16 @@ public class SingleGroupFragment extends Fragment {
         });
 
         b.settings.setOnClickListener(v -> navigateToGroupSettings(groupId, groupName));
+
+
+        b.checkout.setOnClickListener(v -> {
+            SupermarketListFragment supermarketFragment = SupermarketListFragment.newInstance(groupId);
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.main_frame, supermarketFragment)
+                    .addToBackStack("SingleFragment")
+                    .commit();
+        });
     }
 
     private void setupRecyclerView(){
