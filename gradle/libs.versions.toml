@@ -1,5 +1,6 @@
 [versions]
 agp = "8.8.2"
+constraintlayoutVersion = "2.1.4"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -7,6 +8,7 @@ appcompat = "1.7.0"
 material = "1.12.0"
 activity = "1.10.1"
 constraintlayout = "2.2.1"
+photoview = "2.3.0"
 recyclerview = "1.4.0"
 googleGmsGoogleServices = "4.4.2"
 firebaseDatabase = "21.0.0"
@@ -14,10 +16,12 @@ firebaseAuth = "23.2.0"
 reflections = "0.9.12"
 
 [libraries]
+constraintlayout-v214 = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayoutVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+photoview = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoview" }
 recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
