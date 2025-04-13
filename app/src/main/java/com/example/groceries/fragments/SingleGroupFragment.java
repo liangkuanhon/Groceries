@@ -145,6 +145,7 @@ public class SingleGroupFragment extends Fragment {
                         groceryList.add(item);
                     }
                 }
+                // built in method to inform the recycler view to update when changes are made to the dataset
                 adapter.notifyDataSetChanged();
                 updateEmptyState();
             }

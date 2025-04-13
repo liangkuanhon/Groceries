@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Semi-transparent green overlay -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#6000C853" />
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
+
+    <!-- Perfectly fitted teal border -->
+    <item android:left="1dp" android:top="1dp" android:right="1dp" android:bottom="1dp">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="1dp"
+                android:color="@color/bright_teal"/>
+            <corners android:radius="3dp"/>
+            <size
+                android:width="118dp"
+            android:height="118dp"/>
+        </shape>
+    </item>
+
+    <!-- Centered cross icon -->
+    <item
+        android:drawable="@drawable/tick"
+        android:gravity="center"
+        android:width="20dp"
+        android:height="20dp"
+        android:tint="@color/white"/>
+</layer-list>

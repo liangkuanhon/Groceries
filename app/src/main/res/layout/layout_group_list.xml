@@ -7,6 +7,7 @@
     android:padding="10dp">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/group_card"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:layout_margin="4dp"

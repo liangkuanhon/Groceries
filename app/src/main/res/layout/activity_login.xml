@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@color/bg_grey"
+    android:background="@color/background"
     tools:context=".activities.LoginActivity">
 
     <ImageView
@@ -56,13 +56,13 @@
             android:orientation="vertical"
             android:layout_gravity="center_horizontal"
             android:padding="24dp"
-            android:background="@drawable/muted_border">
+            android:background="@drawable/border_muted">
 
             <EditText
                 android:id="@+id/login_input"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/muted_border"
+                android:background="@drawable/border_muted"
                 android:layout_marginTop="25dp"
                 android:padding="15dp"
                 android:hint="@string/email_or_user"
@@ -74,7 +74,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="25dp"
-                android:background="@drawable/muted_border"
+                android:background="@drawable/border_muted"
                 android:hint="@string/password"
                 android:inputType="textPassword"
                 android:textColorHint="@color/soft_gray"
@@ -111,7 +111,7 @@
                 android:text="@string/signup"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:backgroundTint="@color/royal_purple"
+                android:backgroundTint="@color/lighter_olive"
                 app:cornerRadius="5dp"
                 style="@style/Widget.MaterialComponents.Button"/>
 

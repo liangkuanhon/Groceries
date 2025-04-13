@@ -16,6 +16,7 @@ import com.example.groceries.adapter.GroupAdapter;
 import com.example.groceries.adapter.RecommendationAdapter;
 import com.example.groceries.databinding.FragmentAllGroupBinding;
 import com.example.groceries.helper.FirebaseHelper;
+import com.example.groceries.helper.GroupImageHelper;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,7 +32,7 @@ public class AllGroupFragment extends Fragment {
     private FragmentAllGroupBinding b;
     private GroupAdapter adapter;
     private RecommendationAdapter recommendationAdapter;
-    private List<String> groupList;
+    private List<Map<String, Object>> groupDataList;
     private List<String> recommendationList;
     private Map<String, String> groupIdMap;
 
@@ -64,13 +65,13 @@ public class AllGroupFragment extends Fragment {
     }
 
     private void initialise() {
-        groupList = new ArrayList<>();
+        groupDataList = new ArrayList<>();
         recommendationList = new ArrayList<>(DEFAULT_RECOMMENDATIONS);
         groupIdMap = new HashMap<>();
     }
 
     private void setupGroupsRecyclerView() {
-        adapter = new GroupAdapter(groupList);
+        adapter = new GroupAdapter(groupDataList);
         b.groupsRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
         b.groupsRecycler.setAdapter(adapter);
 
@@ -93,43 +94,34 @@ public class AllGroupFragment extends Fragment {
         b.recommendationRecycler.setAdapter(recommendationAdapter);
 
         recommendationAdapter.setOnItemClickListener(position -> {
-            String recommendedGroup = recommendationList.get(position);
-            createRecommendedGroup(recommendedGroup);
+            createRecommendedGroup(position);
         });
     }
 
-    private void createRecommendedGroup(String groupName) {
+    private void createRecommendedGroup(int position) {
         String currentUserId = FirebaseHelper.getCurrentUserId();
         if (currentUserId == null) {
             Toast.makeText(requireContext(), "Please login first", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Create group data
-        Map<String, Object> groupData = new HashMap<>();
-        groupData.put("groupName", groupName);
-        groupData.put("createdBy", currentUserId);
+        String groupName = recommendationList.get(position);
+        int imageResId = GroupImageHelper.getGroupImage(groupName);
 
-        // Add current user as member
-        Map<String, Object> members = new HashMap<>();
-        members.put(currentUserId, true);
-        groupData.put("members", members);
-
-        // Generate new group ID
-        String groupId = FirebaseHelper.getGroupsReference().push().getKey();
-        if (groupId == null) {
-            Toast.makeText(requireContext(), "Failed to create group", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Use FirebaseHelper to create the group
-        FirebaseHelper.createGroup(groupId, groupData, (error, ref) -> {
-            if (error == null) {
-                Toast.makeText(requireContext(), groupName + " created successfully!", Toast.LENGTH_SHORT).show();
-                fetchUserGroups(); // Refresh the groups list
-            } else {
-                Toast.makeText(requireContext(), "Failed to create group: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+        // using helper class to create a group
+        FirebaseHelper.createGroup(groupName, currentUserId, imageResId, (error, ref) -> {
+            if (error != null) {
+                Toast.makeText(requireContext(),
+                        "Failed to create group: " + error.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+                Log.e("CreateGroup", error.getMessage());
+                return;
             }
+
+            Toast.makeText(requireContext(),
+                    groupName + " created successfully!",
+                    Toast.LENGTH_SHORT).show();
+            fetchUserGroups(); // Refresh the list
         });
     }
 
@@ -144,18 +136,23 @@ public class AllGroupFragment extends Fragment {
         FirebaseHelper.getGroupsReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                groupList.clear();
+                groupDataList.clear();
                 groupIdMap.clear();
                 for (DataSnapshot groupSnapshot : dataSnapshot.getChildren()) {
                     if (groupSnapshot.child("members").hasChild(firebaseUID)) {
+                        Map<String, Object> groupData = new HashMap<>();
                         String groupId = groupSnapshot.getKey();
                         String groupName = groupSnapshot.child("groupName").getValue(String.class);
+                        Integer imageResId = groupSnapshot.child("imageResId").getValue(Integer.class);
                         if (groupName != null) {
-                            groupList.add(groupName);
+                            groupData.put("groupName", groupName);
+                            groupData.put("imageResId", imageResId);
+                            groupDataList.add(groupData);
                             groupIdMap.put(groupName, groupId);
                         }
                     }
                 }
+                // update list whenever there is a change in the group list
                 adapter.notifyDataSetChanged();
             }
 

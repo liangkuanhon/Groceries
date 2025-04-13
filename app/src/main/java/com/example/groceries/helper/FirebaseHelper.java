@@ -72,8 +72,31 @@ public class FirebaseHelper {
     // Group Management
 
     // Create a new group in database
-    public static void createGroup(String groupId, Map<String, Object> groupData, DatabaseReference.CompletionListener listener) {
+    public static void createGroup(String groupName, String creatorId, int imageResId,
+                                   DatabaseReference.CompletionListener listener) {
+        String groupId = groupsReference.push().getKey();
+        if (groupId == null) {
+            listener.onComplete(DatabaseError.fromException(new Exception("Failed to generate group ID")), null);
+            return;
+        }
+
+        // Build complete group data structure
+        Map<String, Object> groupData = new HashMap<>();
+        groupData.put("groupName", groupName);
+        groupData.put("createdBy", creatorId);
+        groupData.put("imageResId", imageResId);
+
+        // Initialize members with creator
+        Map<String, Object> members = new HashMap<>();
+        members.put(creatorId, true);
+        groupData.put("members", members);
+
+        // Single database operation
         groupsReference.child(groupId).updateChildren(groupData, listener);
+    }
+
+    public static void deleteGroup(String groupId, DatabaseReference.CompletionListener listener) {
+        groupsReference.child(groupId).removeValue(listener);
     }
 
     // Add group to user's list
@@ -142,13 +165,14 @@ public class FirebaseHelper {
         userReference.child(userId).addListenerForSingleValueEvent(listener);
     }
 
+    public static void addGroupMember(String groupId, String userId, DatabaseReference.CompletionListener listener) {
+        groupsReference.child(groupId).child("members").child(userId).setValue(true, listener);
+    }
+
     public static void removeGroupMember(String groupId, String userId, DatabaseReference.CompletionListener listener) {
         groupsReference.child(groupId).child("members").child(userId).removeValue(listener);
     }
 
-    public static void removeGroupFromUser(String userId, String groupId, DatabaseReference.CompletionListener listener) {
-        userReference.child(userId).child("groups").child(groupId).removeValue(listener);
-    }
 
 
 }
