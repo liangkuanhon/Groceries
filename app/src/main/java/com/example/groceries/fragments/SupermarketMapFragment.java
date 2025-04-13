@@ -1,7 +1,7 @@
 package com.example.groceries.fragments;
 
 import com.example.groceries.helper.FirebaseHelper;
-import com.example.groceries.helper.ItemCategoryMapper;  // Import the helper class
+import com.example.groceries.ItemCategoryMapper;
 import com.example.groceries.Graph;
 import com.example.groceries.R;
 import com.example.groceries.BFSRouter;
@@ -43,6 +43,12 @@ public class SupermarketMapFragment extends Fragment {
 
     private List<String> currentRoute = new ArrayList<>();
     private int currentStepIndex = 0;
+
+    private List<String> originalShoppingList;
+
+    private List<String> originalItemNames;
+
+
 
 
     public static SupermarketMapFragment newInstance(String groupId, String supermarketName) {
@@ -89,6 +95,7 @@ public class SupermarketMapFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<String> shoppingList = new ArrayList<>();
+                originalItemNames = new ArrayList<>(); // Ensure this is initialized correctly
 
                 for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
                     String itemName = itemSnapshot.child("name").getValue(String.class);
@@ -96,6 +103,9 @@ public class SupermarketMapFragment extends Fragment {
 
                     // Only include items that are not checked
                     if (itemName != null && (checked == null || !checked)) {
+                        // Add the item to the originalItemNames
+                        originalItemNames.add(itemName);
+
                         // Map the item to its category using the helper class
                         String category = ItemCategoryMapper.getCategoryForItem(itemName);
 
@@ -130,59 +140,63 @@ public class SupermarketMapFragment extends Fragment {
         });
     }
 
+    private void updateStepDisplay(TextView stepText, TextView hintText) {
+        if (currentRoute == null || currentRoute.isEmpty()) {
+            stepText.setText("No route found.");
+            hintText.setVisibility(View.GONE);
+            return;
+        }
+
+        String stepLocation = currentRoute.get(currentStepIndex);
+        stepText.setText("Step " + (currentStepIndex + 1) + ": Go to " + stepLocation);
+
+        List<String> allItemsAtCategory = ItemCategoryMapper.getItemsAtCategory(stepLocation);
+
+        // Remove the filtering logic and add all items in the category directly
+        List<String> relevantItems = new ArrayList<>(allItemsAtCategory);
+
+
+        if (!relevantItems.isEmpty()) {
+            hintText.setText("Suggested items to collect here: " + String.join(", ", relevantItems));
+            hintText.setVisibility(View.VISIBLE);
+        } else {
+            hintText.setVisibility(View.GONE);
+        }
+    }
+
+
+
+
     private void runRoutingAndShow(List<String> shoppingList, SupermarketGraph supermarketGraph) {
-        // Create the BFSRouter instance with the graph
         BFSRouter router = new BFSRouter(supermarketGraph);
-
-        // Copy the shopping list to avoid mutation during routing
         ArrayList<String> shoppingListCopy = new ArrayList<>(shoppingList);
-
-        // Get the optimal route using BFS
         List<String> optimalRoute = router.greedyBFSRouting(shoppingListCopy);
+        originalShoppingList = new ArrayList<>(shoppingList);
 
-        /*
-        // Display the optimal route in the RecyclerView
-        RecyclerView routeList = requireView().findViewById(R.id.shopping_route_list);
-        routeList.setLayoutManager(new LinearLayoutManager(requireContext()));
-        routeList.setAdapter(new RouteAdapter(optimalRoute));
-         */
-        currentStepIndex = 0;
+
         currentRoute = optimalRoute;
-        updateStepDisplay();
+        currentStepIndex = 0;
 
+        TextView stepText = requireView().findViewById(R.id.step_text);
+        TextView hintText = requireView().findViewById(R.id.item_hint_text);
         Button nextButton = requireView().findViewById(R.id.next_button);
+        Button previousButton = requireView().findViewById(R.id.previous_button);
+
+        updateStepDisplay(stepText, hintText); // Show the first step
+
         nextButton.setOnClickListener(v -> {
             if (currentStepIndex < currentRoute.size() - 1) {
                 currentStepIndex++;
-                updateStepDisplay();
-            } else {
-                Toast.makeText(requireContext(), "Route complete! Proceed to checkout.", Toast.LENGTH_SHORT).show();
+                updateStepDisplay(stepText, hintText);
             }
         });
 
-        Button previousButton = requireView().findViewById(R.id.previous_button);
         previousButton.setOnClickListener(v -> {
-            if (currentStepIndex >= 0) {
+            if (currentStepIndex > 0) {
                 currentStepIndex--;
-                updateStepDisplay();
-            } else {
-                Toast.makeText(requireContext(), "You're at the start!", Toast.LENGTH_SHORT).show();
+                updateStepDisplay(stepText, hintText);
             }
         });
-
-    }
-
-    private void updateStepDisplay() {
-        TextView stepText = requireView().findViewById(R.id.step_text);
-        if (currentStepIndex < currentRoute.size() && currentStepIndex >= 0) {
-            String currentStep = currentRoute.get(currentStepIndex);
-            stepText.setText("Step " + (currentStepIndex + 1) + ": Go to " + currentStep);
-        } else if (currentStepIndex >= currentRoute.size()){
-            stepText.setText("You’ve reached the end of your route!");
-        }
-        else{
-            stepText.setText("You're at the entrance!");
-        }
     }
 
 }

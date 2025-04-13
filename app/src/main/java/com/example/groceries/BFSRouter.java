@@ -14,7 +14,7 @@ public class BFSRouter {
         ArrayList<String> route = new ArrayList<>();
         String currentLocation = "Entrance";
 
-        // Use a set for faster lookup
+        //target categories
         Set<String> targets = new HashSet<>(shoppingList);
 
         while (!targets.isEmpty()) {
@@ -72,7 +72,7 @@ public class BFSRouter {
         return null; // No reachable target
     }
 
-    //reconstructing path by backtracking from end to start
+    //reconstructing path by backtracking
     private List<String> reconstructPath(String start, String end, Map<String, String> parent) {
         List<String> path = new ArrayList<>();
         for (String at = end; at != null; at = parent.get(at)) {
