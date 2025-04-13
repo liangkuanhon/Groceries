@@ -32,6 +32,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+
 
 public class SupermarketMapFragment extends Fragment {
 
@@ -50,6 +53,9 @@ public class SupermarketMapFragment extends Fragment {
     //used for filtering items
     private List<String> originalItemNames;
 
+
+    //to prevent showing "Your shopping list items are" multiple times
+    private Set<String> categoriesWithHints = new HashSet<>();
 
 
 
@@ -153,11 +159,10 @@ public class SupermarketMapFragment extends Fragment {
         String stepLocation = currentRoute.get(currentStepIndex);
         stepText.setText("Step " + (currentStepIndex + 1) + ": Go to " + stepLocation);
 
+        // Find relevant items at this step
         List<String> allItemsAtCategory = ItemCategoryMapper.getItemsAtCategory(stepLocation);
-
         List<String> relevantItems = new ArrayList<>();
 
-        //FILTER ITEMS so only items in your shopping list appear
         for (String item : originalItemNames) {
             String itemCategory = ItemCategoryMapper.getCategoryForItem(item);
             if (itemCategory != null && itemCategory.equals(stepLocation) && allItemsAtCategory.contains(item)) {
@@ -165,16 +170,17 @@ public class SupermarketMapFragment extends Fragment {
             }
         }
 
-
-
-
         if (!relevantItems.isEmpty()) {
+            categoriesWithHints.add(stepLocation);
             hintText.setText("Your shopping list items to collect here: " + String.join(", ", relevantItems));
             hintText.setVisibility(View.VISIBLE);
         } else {
             hintText.setVisibility(View.GONE);
         }
+
     }
+
+
 
 
 
@@ -203,12 +209,33 @@ public class SupermarketMapFragment extends Fragment {
             }
         });
 
+
+        //Show hint again if backtrack logic
         previousButton.setOnClickListener(v -> {
             if (currentStepIndex > 0) {
                 currentStepIndex--;
                 updateStepDisplay(stepText, hintText);
+
+                // Re-show hint if this step had one originally
+                String stepLocation = currentRoute.get(currentStepIndex);
+                if (categoriesWithHints.contains(stepLocation)) {
+                    List<String> allItemsAtCategory = ItemCategoryMapper.getItemsAtCategory(stepLocation);
+                    List<String> relevantItems = new ArrayList<>();
+                    for (String item : originalItemNames) {
+                        String itemCategory = ItemCategoryMapper.getCategoryForItem(item);
+                        if (itemCategory != null && itemCategory.equals(stepLocation) && allItemsAtCategory.contains(item)) {
+                            relevantItems.add(item);
+                        }
+                    }
+
+                    if (!relevantItems.isEmpty()) {
+                        hintText.setText("Your shopping list items to collect here: " + String.join(", ", relevantItems));
+                        hintText.setVisibility(View.VISIBLE);
+                    }
+                }
             }
         });
+
     }
 
 }
