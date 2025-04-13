@@ -1,76 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    android:padding="16dp">
 
-    <!-- TextView for displaying the supermarket name -->
-    <TextView
-        android:id="@+id/supermarket_name"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/supermarket_name"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+        android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/supermarket_map_image"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:scaleType="fitCenter"
-        android:contentDescription="@string/supermarket_map_image" />
+        <!-- Supermarket Name -->
+        <TextView
+            android:id="@+id/supermarket_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/supermarket_name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
 
-    <TextView
-        android:id="@+id/route_instruction_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/your_shopping_route"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:layout_marginTop="16dp"/>
+        <!-- Supermarket Map Image -->
+        <ImageView
+            android:id="@+id/supermarket_map_image"
+            android:layout_width="match_parent"
+            android:layout_height="1000dp"
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/supermarket_map_image" />
 
-    <TextView
-        android:id="@+id/step_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:padding="12dp"
-        android:textSize="16sp"
-        android:textColor="@android:color/black"
-        android:text="Step 1: Loading..."
-        android:background="@android:color/darker_gray"/>
+        <!-- Route Instruction Title -->
+        <TextView
+            android:id="@+id/route_instruction_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/your_shopping_route"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp"/>
 
-    <Button
-        android:id="@+id/next_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/next"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
-        android:backgroundTint="@android:color/holo_green_dark"
-        android:textColor="@android:color/white" />
+        <!-- Item Hint Text -->
+        <TextView
+            android:id="@+id/item_hint_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="italic"
+            android:padding="4dp"
+            android:textColor="@android:color/holo_green_dark"
+            android:visibility="gone" />
 
-    <Button
-        android:id="@+id/previous_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/previouscapitalized"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
-        android:backgroundTint="@android:color/holo_green_dark"
-        android:textColor="@android:color/white" />
-    <TextView
-        android:id="@+id/item_hint_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textStyle="italic"
-        android:padding="8dp"
-        android:textColor="@android:color/holo_green_dark"
-        android:visibility="gone" />
+        <!-- Step Text -->
+        <TextView
+            android:id="@+id/step_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:text="Step 1: Loading..."
+            android:background="@android:color/darker_gray"/>
+
+        <!-- Next Button -->
+        <Button
+            android:id="@+id/next_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/next"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="4dp"
+            android:backgroundTint="@android:color/holo_green_dark"
+            android:textColor="@android:color/white" />
+
+        <!-- Previous Button -->
+        <Button
+            android:id="@+id/previous_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/previouscapitalized"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="4dp"
+            android:backgroundTint="@android:color/holo_green_dark"
+            android:textColor="@android:color/white" />
 
 
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>
