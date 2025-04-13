@@ -44,9 +44,12 @@ public class SupermarketMapFragment extends Fragment {
     private List<String> currentRoute = new ArrayList<>();
     private int currentStepIndex = 0;
 
+    //used for filtering items
     private List<String> originalShoppingList;
 
+    //used for filtering items
     private List<String> originalItemNames;
+
 
 
 
@@ -152,12 +155,21 @@ public class SupermarketMapFragment extends Fragment {
 
         List<String> allItemsAtCategory = ItemCategoryMapper.getItemsAtCategory(stepLocation);
 
-        // Remove the filtering logic and add all items in the category directly
-        List<String> relevantItems = new ArrayList<>(allItemsAtCategory);
+        List<String> relevantItems = new ArrayList<>();
+
+        //FILTER ITEMS so only items in your shopping list appear
+        for (String item : originalItemNames) {
+            String itemCategory = ItemCategoryMapper.getCategoryForItem(item);
+            if (itemCategory != null && itemCategory.equals(stepLocation) && allItemsAtCategory.contains(item)) {
+                relevantItems.add(item);
+            }
+        }
+
+
 
 
         if (!relevantItems.isEmpty()) {
-            hintText.setText("Suggested items to collect here: " + String.join(", ", relevantItems));
+            hintText.setText("Your shopping list items to collect here: " + String.join(", ", relevantItems));
             hintText.setVisibility(View.VISIBLE);
         } else {
             hintText.setVisibility(View.GONE);

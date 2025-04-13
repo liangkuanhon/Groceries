@@ -1,8 +1,10 @@
-package com.example.groceries.helper;
+package com.example.groceries;
 
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ItemCategoryMapper {
@@ -221,12 +223,26 @@ public class ItemCategoryMapper {
     }
 
     // Method to get the category for an item
-    public static String getCategoryForItem(String item) {
-        return itemToCategoryMap.get(item.trim()); // Ensure case-insensitivity
+    public static String getCategoryForItem(String itemName) {
+        if (itemName == null) return null;
+        return itemToCategoryMap.get(itemName);
     }
 
-    // Optionally, you can have a method to add more mappings at runtime
-    public static void addMapping(String item, String category) {
-        itemToCategoryMap.put(item.toLowerCase(), category); // Add or update the mapping
+
+    public static List<String> getItemsAtCategory(String categoryName) {
+        if (categoryName == null) return new ArrayList<>();
+
+        List<String> items = new ArrayList<>();
+        for (Map.Entry<String, String> entry : itemToCategoryMap.entrySet()) {
+            if (entry.getValue().equalsIgnoreCase(categoryName)) {
+                items.add(entry.getKey());
+            }
+        }
+        return items;
     }
+
+
+
+
+
 }
