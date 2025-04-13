@@ -24,6 +24,8 @@
     <color name="dark_gray">#7F8C8D</color>
     <color name="deep_blue">#2C3E50</color>
     <color name="light_greyish_blue">#B0BEC5</color>
+    <color name="background">#fffbeb</color>
+
 
     <!-- Additional Colours for depth -->
     <color name="royal_purple">#8E44AD</color>
@@ -32,7 +34,9 @@
     <color name="soft_gray">#B0B0B0</color>
 
     <!-- For highlights -->
-    <color name="bright_teal">#1ABC9C</color>
+    <color name="bright_teal">#48601c</color>
+    <color name="lighter_olive">#6B8E23</color>
+    <color name="golden_yellow">#D4A017</color>
     <color name="lime_green">#27AE60</color>
     <color name="muted_blue">#3498DB</color>
     <color name="soft_orange">#E67E22</color>

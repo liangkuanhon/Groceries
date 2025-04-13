@@ -29,7 +29,6 @@ public class ItemsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         b = ActivityItemsBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
-        EdgeToEdge.enable(this);
 
         b.backArrow.setOnClickListener(v -> {
             finish();

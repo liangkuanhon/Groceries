@@ -41,7 +41,7 @@
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@drawable/muted_border"
+            android:background="@drawable/border_muted"
             android:hint="@string/name"
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"

@@ -171,7 +171,7 @@ public class GroceryData {
             put("Meatballs", R.drawable.product_meatballs);
         }});
         put("Noodles", new HashMap<String, Integer>(){{
-            put("Cup Noodle", R.drawable.product_cup_noods);
+            put("Cup Noodle", R.drawable.back_arrow);
             put("Ramen", R.drawable.product_ramen);
             put("Udon", R.drawable.product_udon);
             put("Lasagna Sheets", R.drawable.product_lasagna_sheets);
@@ -207,10 +207,6 @@ public class GroceryData {
             put("Broccoli", R.drawable.product_broccoli);
             put("Carrot", R.drawable.product_carrot);
         }});
-
-
-
-
 
     }};
 

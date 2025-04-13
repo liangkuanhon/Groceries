@@ -68,7 +68,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:text="Your grocery list is empty"
-                android:textAlignment="center"
+                android:gravity="center"
                 android:textSize="18sp"
                 android:visibility="gone"/>
 
@@ -84,7 +84,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="80dp"
-        android:tint="@color/soft_orange"
+        app:tint="@color/soft_orange"
         app:cornerRadius="8dp"/>
 
     <com.google.android.material.button.MaterialButton

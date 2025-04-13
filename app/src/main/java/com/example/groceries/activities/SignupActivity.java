@@ -169,7 +169,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void navigateToNameActivity(String uid) {
-        navigationHelper.navigateToActivityClearStack(NameActivity.class);
+        navigationHelper.navigateToActivityWithExtra(NameActivity.class, "UID", uid);
     }
 
     private void navigateToLogin() {

@@ -45,6 +45,8 @@ public class SingleGroupFragment extends Fragment {
     private GroceryItemAdapter adapter;
     private final List<GroceryItem> groceryList = new ArrayList<>();
 
+
+    // required default empty constructor
     public SingleGroupFragment(){
     }
 
@@ -57,6 +59,7 @@ public class SingleGroupFragment extends Fragment {
         return fragment;
     }
 
+    // used for initialising non-UI components
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +69,7 @@ public class SingleGroupFragment extends Fragment {
         }
     }
 
+    // used to inflate the fragment ui, must return the root
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -74,6 +78,8 @@ public class SingleGroupFragment extends Fragment {
         return b.getRoot();
     }
 
+    // called immediately after onCreateView
+    // initialise ui components here
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -86,8 +92,6 @@ public class SingleGroupFragment extends Fragment {
 
         getItemsFromFirebase();
     }
-
-
 
     private void setupClickListeners() {
         b.backArrow.setOnClickListener(v -> {
@@ -104,17 +108,6 @@ public class SingleGroupFragment extends Fragment {
         });
 
         b.settings.setOnClickListener(v -> navigateToGroupSettings(groupId, groupName));
-
-        b.checkout.setOnClickListener(v -> {
-            SupermarketListFragment supermarketFragment = SupermarketListFragment.newInstance(groupId);
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main_frame, supermarketFragment)
-                    .addToBackStack("SingleFragment")
-                    .commit();
-        });
-
-
     }
 
     private void setupRecyclerView(){
@@ -152,6 +145,7 @@ public class SingleGroupFragment extends Fragment {
                         groceryList.add(item);
                     }
                 }
+                // built in method to inform the recycler view to update when changes are made to the dataset
                 adapter.notifyDataSetChanged();
                 updateEmptyState();
             }

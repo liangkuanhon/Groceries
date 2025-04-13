@@ -5,26 +5,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.groceries.R;
+import com.example.groceries.helper.GroupImageHelper;
 
 import java.util.List;
+import java.util.Map;
 
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupViewHolder> {
-    private List<String> groupList;
+    private List<Map<String, Object>> groupDataList; // Changed from List<String>
     private OnGroupClickListener listener;
 
     public interface OnGroupClickListener {
         void onGroupClick(String groupName);
     }
 
-    public void setOnGroupClickListener(OnGroupClickListener listener){
-        this.listener = listener;
+    public GroupAdapter(List<Map<String, Object>> groupDataList) {
+        this.groupDataList = groupDataList;
     }
 
-    public GroupAdapter(List<String> groupList) {
-        this.groupList = groupList;
+    public void setOnGroupClickListener(OnGroupClickListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
@@ -37,8 +40,11 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupViewHol
 
     @Override
     public void onBindViewHolder(@NonNull GroupViewHolder holder, int position) {
-        String groupName = groupList.get(position);
-        holder.groupName.setText(groupName);
+        Map<String, Object> groupData = groupDataList.get(position);
+        String groupName = (String) groupData.get("groupName");
+        Integer imageResId = (Integer) groupData.get("imageResId");
+
+        holder.bind(groupName, imageResId != null ? imageResId : GroupImageHelper.DEFAULT_IMAGE_RES_ID);
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
@@ -49,15 +55,27 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupViewHol
 
     @Override
     public int getItemCount() {
-        return groupList.size();
+        return groupDataList.size();
+    }
+
+    public void updateData(List<Map<String, Object>> newData) {
+        groupDataList = newData;
+        notifyDataSetChanged();
     }
 
     static class GroupViewHolder extends RecyclerView.ViewHolder {
-        TextView groupName;
+        TextView groupNameTextView;
+        CardView cardView;
 
         public GroupViewHolder(@NonNull View itemView) {
             super(itemView);
-            groupName = itemView.findViewById(R.id.group_name);
+            groupNameTextView = itemView.findViewById(R.id.group_name);
+            cardView = itemView.findViewById(R.id.group_card);
+        }
+
+        public void bind(String groupName, int imageResId) {
+            groupNameTextView.setText(groupName);
+            cardView.setBackgroundResource(imageResId);
         }
     }
 }

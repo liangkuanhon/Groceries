@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:background="@color/bg_grey"
+    android:background="@color/background"
     tools:context="activities.SignupActivity">
 
     <ImageView
@@ -55,7 +55,7 @@
             android:orientation="vertical"
             android:layout_gravity="center_horizontal"
             android:padding="24dp"
-            android:background="@drawable/muted_border">
+            android:background="@drawable/border_muted">
 
             <TextView
                 android:id="@+id/signup_title"
@@ -71,7 +71,7 @@
                 android:id="@+id/signup_email"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/muted_border"
+                android:background="@drawable/border_muted"
                 android:layout_marginTop="10dp"
                 android:padding="15dp"
                 android:hint="@string/email"
@@ -82,7 +82,7 @@
                 android:id="@+id/signup_username"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/muted_border"
+                android:background="@drawable/border_muted"
                 android:layout_marginTop="15dp"
                 android:padding="15dp"
                 android:hint="@string/username"
@@ -94,7 +94,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
-                android:background="@drawable/muted_border"
+                android:background="@drawable/border_muted"
                 android:hint="@string/password"
                 android:inputType="textPassword"
                 android:padding="15dp"
@@ -105,7 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
-                android:background="@drawable/muted_border"
+                android:background="@drawable/border_muted"
                 android:hint="@string/reconfirm"
                 android:inputType="textPassword"
                 android:textColorHint="@color/light_greyish_blue"
@@ -142,7 +142,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/signup_underline"
-                    android:textColor="@color/royal_purple"
+                    android:textColor="@color/golden_yellow"
                     android:layout_marginStart="10dp"/>
 
             </LinearLayout>
