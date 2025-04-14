@@ -173,6 +173,16 @@ public class FirebaseHelper {
         groupsReference.child(groupId).child("members").child(userId).removeValue(listener);
     }
 
+    //to reset the shopping list
+// Remove all group items from the Firebase database
+    public static void removeAllGroupItems(String groupId, DatabaseReference.CompletionListener listener) {
+        // Assuming your group items are stored under a "groupItems" node under each group
+        DatabaseReference groupItemsRef = database.getReference("groups").child(groupId).child("items");
+        groupItemsRef.removeValue(listener);  // This will remove all items in the group
+    }
+
+
+
 
 
 }

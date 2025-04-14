@@ -15,21 +15,28 @@ import android.view.ViewGroup;
 import com.example.groceries.R;
 import com.example.groceries.adapter.SupermarketAdapter;
 import com.example.groceries.SupermarketFactory;
+import com.example.groceries.databinding.FragmentSingleGroupBinding;
+import com.example.groceries.databinding.FragmentSupermarketListBinding;
 
 import java.util.List;
 
 public class SupermarketListFragment extends Fragment {
 
+    private @NonNull FragmentSupermarketListBinding b;
     private RecyclerView recyclerView;
     private SupermarketAdapter adapter;
 
     private static final String ARG_GROUP_ID = "group_id";
+    private static final String ARG_GROUP_NAME = "group_name";
     private String groupId;
 
-    public static SupermarketListFragment newInstance(String groupId) {
+    private String groupName;
+
+    public static SupermarketListFragment newInstance(String groupId, String groupName) {
         SupermarketListFragment fragment = new SupermarketListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_GROUP_ID, groupId);
+        args.putString(ARG_GROUP_NAME, groupName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -41,6 +48,7 @@ public class SupermarketListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             groupId = getArguments().getString(ARG_GROUP_ID);
+            groupName = getArguments().getString(ARG_GROUP_NAME);
         }
     }
 
@@ -49,7 +57,8 @@ public class SupermarketListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_supermarket_list, container, false);
+        b = FragmentSupermarketListBinding.inflate(inflater, container, false);
+        return b.getRoot();
     }
 
     @Override
@@ -57,11 +66,12 @@ public class SupermarketListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Initialize RecyclerView and Adapter
-        recyclerView = view.findViewById(R.id.supermarket_recycler_view);
+        recyclerView = b.supermarketRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         // Get the list of supermarket names from SupermarketFactory
         List<String> supermarketNames = SupermarketFactory.getRegisteredSupermarkets();
+
 
 
         // pass the supermarket name to the next fragment or activity
@@ -69,17 +79,35 @@ public class SupermarketListFragment extends Fragment {
 
         // Set the adapter for the RecyclerView
         recyclerView.setAdapter(adapter);
+
+
+        setupClickListeners();
     }
 
     // Method to navigate to the supermarket map (replace this with your navigation code)
     private void navigateToSupermarketMap(String supermarketName) {
-        SupermarketMapFragment fragment = SupermarketMapFragment.newInstance(groupId, supermarketName);
-
+        SupermarketMapFragment fragment = SupermarketMapFragment.newInstance(groupId, groupName, supermarketName);
 
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.main_frame, fragment) // make sure this ID is correct in your activity's layout!
                 .addToBackStack(null)
+                .commit();
+    }
+
+    private void setupClickListeners() {
+        b.backArrow.setOnClickListener(v -> {
+            navigateToGroupDetailsFragment(groupId, groupName);
+        });
+    }
+
+
+    private void navigateToGroupDetailsFragment(String groupId, String groupName) {
+        SingleGroupFragment fragment = SingleGroupFragment.newInstance(groupId, groupName);
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_frame, fragment)
+                .addToBackStack("AllGroupDetailsFragment")
                 .commit();
     }
 

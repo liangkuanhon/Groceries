@@ -103,7 +103,7 @@ public class SingleGroupFragment extends Fragment {
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.main_frame, categoryFragment)
-                    .addToBackStack("SingleFragment")
+                    .addToBackStack("SingleGroupFragment")
                     .commit();
         });
 
@@ -111,7 +111,7 @@ public class SingleGroupFragment extends Fragment {
 
 
         b.checkout.setOnClickListener(v -> {
-            SupermarketListFragment supermarketFragment = SupermarketListFragment.newInstance(groupId);
+            SupermarketListFragment supermarketFragment = SupermarketListFragment.newInstance(groupId, groupName);
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.main_frame, supermarketFragment)
