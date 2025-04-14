@@ -20,48 +20,67 @@ public class NTUCSimeiGraph extends SupermarketGraph {
         addEdge("Entrance", "Grain");
         addEdge("Entrance", "Vegetables");
 
-
         addEdge("Dairy", "Meat");
-
-        addEdge("Meat", "Vegetables");
-        addEdge("Meat", "Seafood");
+        addEdge("Dairy", "Vegetables");
 
         addEdge("Vegetables", "Fruits");
+        addEdge("Vegetables", "Grain");
+        addEdge("Vegetables", "Meat");
+        addEdge("Vegetables", "Noodles");
 
-        addEdge("Seafood", "Fruits");
+        addEdge("Meat", "Fruits");
+        addEdge("Meat", "Seafood");
 
+        addEdge("Fruits", "Condiments");
         addEdge("Fruits", "Bakery");
+        addEdge("Fruits", "Seafood");
+        addEdge("Fruits", "Noodles");
 
-        addEdge("Bakery", "Canned Goods");
+        addEdge("Seafood", "Bakery");
+
         addEdge("Bakery", "Condiments");
+        addEdge("Bakery", "Canned Goods");
 
         addEdge("Canned Goods", "Condiments");
         addEdge("Canned Goods", "Personal Care");
+        addEdge("Canned Goods", "Beauty");
+
+        addEdge("Condiments", "Personal Care");
+        addEdge("Condiments", "Beauty");
+        addEdge("Condiments", "Noodles");
 
         addEdge("Personal Care", "Ice Cream");
         addEdge("Personal Care", "Beauty");
 
-        addEdge("Ice Cream", "Beauty");
-        addEdge("Ice Cream", "Alcohol");
-
-        addEdge("Beauty", "Condiments");
+        addEdge("Beauty", "Ice Cream");
+        addEdge("Beauty", "Noodles");
         addEdge("Beauty", "Snacks");
+        addEdge("Beauty", "Alcohol");
 
-        addEdge("Alcohol", "Snacks");
-        addEdge("Alcohol", "Beverages");
+        addEdge("Ice Cream", "Alcohol");
+        addEdge("Ice Cream", "Snacks");
 
-        addEdge("Snacks", "Noodles");
-        addEdge("Snacks", "Candy");
-
-        addEdge("Noodles", "Condiments");
-        addEdge("Noodles", "Vegetables");
-        addEdge("Noodles", "Vegetables");
-        addEdge("Noodles", "Grain");
-
+        addEdge("Grain", "Noodles");
         addEdge("Grain", "Candy");
+        addEdge("Grain", "Snacks");
+
+        addEdge("Noodles", "Snacks");
+        addEdge("Noodles", "Candy");
+
+        addEdge("Snacks", "Candy");
+        addEdge("Snacks", "Alcohol");
+        addEdge("Snacks", "Beverages");
 
         addEdge("Candy", "Beverages");
+        addEdge("Candy", "Checkout");
+
+        addEdge("Alcohol", "Beverages");
+        addEdge("Alcohol", "Chilled");
 
         addEdge("Beverages", "Checkout");
+        addEdge("Beverages", "Chilled");
+        addEdge("Beverages", "Eggs");
+
+        addEdge("Eggs", "Checkout");
     }
 }

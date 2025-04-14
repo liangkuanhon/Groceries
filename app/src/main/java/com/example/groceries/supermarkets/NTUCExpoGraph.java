@@ -16,52 +16,78 @@ public class NTUCExpoGraph extends SupermarketGraph {
 
     private void createGraph() {
         addEdge("", "");
+        addEdge("Entrance", "Fruits");
         addEdge("Entrance", "Dairy");
-        addEdge("Entrance", "Grain");
-        addEdge("Entrance", "Vegetables");
+        addEdge("Entrance", "Alcohol");
 
+        addEdge("Fruits", "Vegetables");
+        addEdge("Fruits", "Alcohol");
+        addEdge("Fruits", "Grains");
+        addEdge("Fruits", "Canned Goods");
 
-        addEdge("Dairy", "Meat");
+        addEdge("Vegetables", "Bakery");
+        addEdge("Vegetables", "Canned Goods");
+        addEdge("Vegetables", "Grains");
+        addEdge("Vegetables", "Personal Care");
 
-        addEdge("Meat", "Vegetables");
-        addEdge("Meat", "Seafood");
+        addEdge("Bakery", "Personal Care");
+        addEdge("Bakery", "Ice Cream");
 
-        addEdge("Vegetables", "Fruits");
+        addEdge("Ice Cream", "Personal Care");
+        addEdge("Ice Cream", "Beauty");
+        addEdge("Ice Cream", "Chilled");
 
-        addEdge("Seafood", "Fruits");
+        addEdge("Chilled", "Eggs");
+        addEdge("Chilled", "Ice Cream");
+        addEdge("Chilled", "Beauty");
+        addEdge("Chilled", "Checkout");
 
-        addEdge("Fruits", "Bakery");
+        addEdge("Eggs", "Checkout");
+        addEdge("Eggs", "Candy");
 
-        addEdge("Bakery", "Canned Goods");
-        addEdge("Bakery", "Condiments");
+        addEdge("Candy", "Checkout");
+        addEdge("Candy", "Beauty");
+        addEdge("Candy", "Condiments");
+        addEdge("Candy", "Snacks");
+        addEdge("Candy", "Noodles");
+
+        addEdge("Snacks", "Checkout");
+        addEdge("Snacks", "Noodles");
+        addEdge("Snacks", "Beverages");
+        addEdge("Snacks", "Seafood");
+        addEdge("Snacks", "Meat");
+
+        addEdge("Seafood", "Checkout");
+        addEdge("Seafood", "Meat");
+
+        addEdge("Meat", "Beverages");
+        addEdge("Meat", "Dairy");
+        addEdge("Meat", "Alcohol");
+
+        addEdge("Dairy", "Alcohol");
+        addEdge("Dairy", "Beverages");
+
+        addEdge("Alcohol", "Beverages");
+        addEdge("Alcohol", "Grain");
+        addEdge("Alcohol", "Noodles");
+
+        addEdge("Grain", "Beverages");
+        addEdge("Grain", "Noodles");
+        addEdge("Grain", "Canned Goods");
+        addEdge("Grain", "Condiments");
 
         addEdge("Canned Goods", "Condiments");
+        addEdge("Canned Goods", "Noodles");
+        addEdge("Canned Goods", "Beauty");
         addEdge("Canned Goods", "Personal Care");
 
-        addEdge("Personal Care", "Ice Cream");
+        addEdge("Personal Care", "Condiments");
         addEdge("Personal Care", "Beauty");
 
-        addEdge("Ice Cream", "Beauty");
-        addEdge("Ice Cream", "Alcohol");
-
         addEdge("Beauty", "Condiments");
-        addEdge("Beauty", "Snacks");
 
-        addEdge("Alcohol", "Snacks");
-        addEdge("Alcohol", "Beverages");
+        addEdge("Condiments", "Noodles");
 
-        addEdge("Snacks", "Noodles");
-        addEdge("Snacks", "Candy");
-
-        addEdge("Noodles", "Condiments");
-        addEdge("Noodles", "Vegetables");
-        addEdge("Noodles", "Vegetables");
-        addEdge("Noodles", "Grain");
-
-        addEdge("Grain", "Candy");
-
-        addEdge("Candy", "Beverages");
-
-        addEdge("Beverages", "Checkout");
+        addEdge("Noodles", "Beverages");
     }
 }
