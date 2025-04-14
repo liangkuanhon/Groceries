@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
@@ -21,11 +22,11 @@
             android:layout_marginBottom="8dp"/>
 
         <!-- Supermarket Map Image -->
-        <ImageView
+        <com.example.groceries.ZoomImageView
             android:id="@+id/supermarket_map_image"
             android:layout_width="match_parent"
-            android:layout_height="1000dp"
-            android:scaleType="fitCenter"
+            android:layout_height="300dp"
+            android:scaleType="matrix"
             android:contentDescription="@string/supermarket_map_image" />
 
         <!-- Route Instruction Title -->
