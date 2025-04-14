@@ -29,6 +29,7 @@ import com.example.groceries.databinding.ActivityMainBinding;
 import com.example.groceries.databinding.FragmentAllGroupBinding;
 import com.example.groceries.databinding.FragmentSingleGroupBinding;
 import com.example.groceries.helper.FirebaseHelper;
+import com.example.groceries.helper.NavigationHelper;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -37,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SingleGroupFragment extends Fragment {
+    private NavigationHelper navigationHelper;
+
     private FragmentSingleGroupBinding b;
     private static final String ARG_GROUP_NAME = "group_name";
     private static final String ARG_GROUP_ID = "group_id";
@@ -84,6 +87,9 @@ public class SingleGroupFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        navigationHelper = new NavigationHelper(requireActivity(), R.id.main_frame);
+
+
         b.groupName.setText(groupName);
 
         setupClickListeners();
@@ -95,8 +101,9 @@ public class SingleGroupFragment extends Fragment {
 
     private void setupClickListeners() {
         b.backArrow.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager().popBackStackImmediate();
+            navigationHelper.navigateToFragment(new AllGroupFragment());
         });
+
 
         b.addItem.setOnClickListener(v -> {
             CategoryFragment categoryFragment = CategoryFragment.newInstance(groupId);
