@@ -130,11 +130,12 @@ public class SignupActivity extends AppCompatActivity {
 
 
     private void registerNewUser(String email, String password, String username) {
-        auth.createUserWithEmailAndPassword(email, password)
+        auth.createUserWithEmailAndPassword(email, password) // calls firebase authenticator to create a new user account
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = auth.getCurrentUser();
                         if (user != null) {
+                            // calls method to save user details to database
                             saveUserToFirebase(user.getUid(), email, username, password);
                         }
                     } else {

@@ -2,37 +2,25 @@ package com.example.groceries.fragments;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.groceries.GroceryData;
 import com.example.groceries.GroceryItem;
-import com.example.groceries.GroceryListManager;
 import com.example.groceries.R;
-import com.example.groceries.activities.GroceryListActivity;
-import com.example.groceries.activities.ItemsActivity;
-import com.example.groceries.activities.LoginActivity;
-import com.example.groceries.activities.SignupActivity;
 import com.example.groceries.adapter.GroceryItemAdapter;
-import com.example.groceries.databinding.ActivityMainBinding;
-import com.example.groceries.databinding.FragmentAllGroupBinding;
 import com.example.groceries.databinding.FragmentSingleGroupBinding;
 import com.example.groceries.helper.FirebaseHelper;
+import com.example.groceries.helper.NavigationHelper;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -48,7 +36,7 @@ public class SingleGroupFragment extends Fragment {
     private String groupId;
     private GroceryItemAdapter adapter;
     private final List<GroceryItem> groceryList = new ArrayList<>();
-
+    private NavigationHelper navigationHelper;
 
     // required default empty constructor
     public SingleGroupFragment(){
@@ -71,6 +59,7 @@ public class SingleGroupFragment extends Fragment {
             groupId = getArguments().getString(ARG_GROUP_ID);
             groupName = getArguments().getString(ARG_GROUP_NAME);
         }
+        navigationHelper = new NavigationHelper(requireActivity(), R.id.main_frame);
     }
 
     // used to inflate the fragment ui, must return the root
@@ -91,24 +80,16 @@ public class SingleGroupFragment extends Fragment {
         b.groupName.setText(groupName);
 
         setupClickListeners();
-
         setupRecyclerView();
-
         getItemsFromFirebase();
     }
 
     private void setupClickListeners() {
-        b.backArrow.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager().popBackStackImmediate();
-        });
+        b.backArrow.setOnClickListener(v -> navigationHelper.navigateBack());
 
         b.addItem.setOnClickListener(v -> {
             CategoryFragment categoryFragment = CategoryFragment.newInstance(groupId);
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main_frame, categoryFragment)
-                    .addToBackStack("SingleFragment")
-                    .commit();
+            navigationHelper.navigateToFragment(categoryFragment);
         });
 
         b.settings.setOnClickListener(v -> navigateToGroupSettings(groupId, groupName));
@@ -117,11 +98,7 @@ public class SingleGroupFragment extends Fragment {
 
         b.checkout.setOnClickListener(v -> {
             SupermarketListFragment supermarketFragment = SupermarketListFragment.newInstance(groupId);
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main_frame, supermarketFragment)
-                    .addToBackStack("SingleFragment")
-                    .commit();
+            navigationHelper.navigateToFragment(supermarketFragment);
         });
     }
 
@@ -176,10 +153,9 @@ public class SingleGroupFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Handle error
+                Toast.makeText(requireContext(), "Failed to load items", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     private void updateEmptyState() {
@@ -227,13 +203,6 @@ public class SingleGroupFragment extends Fragment {
 
     private void navigateToGroupSettings(String groupId, String groupName) {
         GroupSettingFragment groupSettingFragment = GroupSettingFragment.newInstance(groupId, groupName);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.main_frame, groupSettingFragment)
-                .addToBackStack("SingleFragment")
-                .commit();
+        navigationHelper.navigateToFragment(groupSettingFragment);
     }
-
-
-
 }

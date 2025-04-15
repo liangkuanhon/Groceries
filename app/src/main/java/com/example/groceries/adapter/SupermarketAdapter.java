@@ -16,18 +16,15 @@ public class SupermarketAdapter extends RecyclerView.Adapter<SupermarketAdapter.
 
     private List<String> supermarketNames;
     private OnSupermarketClickListener listener;
-
     // Interface for handling supermarket item clicks
     public interface OnSupermarketClickListener {
         void onSupermarketClick(String supermarketName);
     }
 
-
     public SupermarketAdapter(List<String> supermarketNames, OnSupermarketClickListener listener) {
         this.supermarketNames = supermarketNames;
         this.listener = listener;
     }
-
 
     @NonNull
     @Override
@@ -36,7 +33,6 @@ public class SupermarketAdapter extends RecyclerView.Adapter<SupermarketAdapter.
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.supermarket_item, parent, false);
         return new SupermarketViewHolder(view);
     }
-
 
     @Override
     public void onBindViewHolder(SupermarketViewHolder holder, int position) {

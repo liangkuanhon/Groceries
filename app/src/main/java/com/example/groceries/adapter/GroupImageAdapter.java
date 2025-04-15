@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.example.groceries.R;
+import com.example.groceries.databinding.LayoutGroupImageBinding;
 import com.example.groceries.helper.GroupImageHelper;
 
 import java.util.List;
@@ -15,12 +16,12 @@ import java.util.Map;
 
 public class GroupImageAdapter extends BaseAdapter {
     private final Context context;
-    private final List<Map.Entry<String, Integer>> images;
-    private int selectedPosition = -1;
+    private final List<Map.Entry<String, Integer>> images; // a list of map pairs (key: image name, value: drawable resource id)
+    private int selectedPosition = -1; // tracks which image is selected -1 means no selection
 
     public GroupImageAdapter(Context context, List<Map.Entry<String, Integer>> images) {
-        this.context = context;
-        this.images = images;
+        this.context = context; // creategroup activity
+        this.images = images; // a list of images from groupimagehelper
     }
 
     @Override
@@ -30,7 +31,7 @@ public class GroupImageAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return images.get(position);
+        return images.get(position); // returns the Map.Entry (image name + resource ID) at the given position
     }
 
     @Override
@@ -40,6 +41,7 @@ public class GroupImageAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.layout_group_image, parent, false);
         }

@@ -22,6 +22,7 @@ import com.example.groceries.databinding.ActivityMainBinding;
 import com.example.groceries.fragments.AllGroupFragment;
 import com.example.groceries.fragments.ProfileFragment;
 import com.example.groceries.fragments.SingleGroupFragment;
+import com.example.groceries.helper.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -30,72 +31,42 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding b;
     private AllGroupFragment groupsFragment = new AllGroupFragment();
     private ProfileFragment profileFragment = new ProfileFragment();
+    private NavigationHelper navigationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Test code ===============
-        try {
-            Class.forName("com.example.groceries.supermarkets.NTUCSimeiGraph");
-            SupermarketGraph supermarket = SupermarketFactory.getSupermarketGraph("ntuc simei");
+        initialise();
+        handleIntent(getIntent());
+        setupNavigation();
+    }
 
-            if (supermarket == null) {
-                Log.e("BFSRoute", "SupermarketGraph returned null for 'ntuc simei'");
-                return;  // prevent crash by exiting early
-            }
-
-            BFSRouter router = new BFSRouter(supermarket);
-
-            ArrayList<String> shoppingList = new ArrayList<>(Arrays.asList("Dairy", "Seafood", "Canned Goods"));
-            ArrayList<String> route = router.greedyBFSRouting(shoppingList);
-
-            if (route == null) {
-                Log.e("BFSRoute", "Route came back null!");
-            } else {
-                Log.d("BFSRoute", "Route: " + route.toString());
-            }
-        } catch (Exception e) {
-            Log.e("BFSRoute", "Caught exception: ", e);
-        }
-        // Test code ===============
-
-        // Initialize View Binding
+    private void initialise(){
         b = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
-
-        EdgeToEdge.enable(this);
-        ViewCompat.setOnApplyWindowInsetsListener(b.main, (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
-        // Set default fragment
         getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, groupsFragment).commit();
+        navigationHelper = new NavigationHelper(this);
+    }
 
+    private void setupNavigation(){
         // Bottom Navigation setup with 3 items
         BottomNavigationView bottomNavigationView = b.mainBottomNavigation;
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int itemId = item.getItemId();
-                if (itemId == R.id.group) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, groupsFragment).commit();
-                    return true;
-                } else if (itemId == R.id.add) {
-                    Intent intent = new Intent(MainActivity.this, CreateGroupActivity.class);
-                    startActivity(intent);
-                    return true;
-                } else if (itemId == R.id.profile) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, profileFragment).commit();
-                    return true;
-                }
-                return false;
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.group) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, groupsFragment).commit();
+                return true;
+            } else if (itemId == R.id.add) {
+                Intent intent = new Intent(MainActivity.this, CreateGroupActivity.class);
+                startActivity(intent);
+                return true;
+            } else if (itemId == R.id.profile) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, profileFragment).commit();
+                return true;
             }
+            return false;
         });
-
-        handleIntent(getIntent());
     }
 
     @Override
@@ -115,10 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 // Open SingleGroupFragment
                 SingleGroupFragment fragment = SingleGroupFragment.newInstance(groupId, groupName);
 
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_frame, fragment)
-                        .addToBackStack(null)
-                        .commit();
+                navigationHelper.navigateToFragment(fragment);
             }
         }
     }
