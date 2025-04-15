@@ -64,6 +64,11 @@
 
     <!-- group fragment -->
     <string name="recommendations">List Recommendations</string>
+    <string name="supermarket_name" />
+    <string name="supermarket_map_image" />
+    <string name="your_shopping_route" />
+    <string name="previouscapitalized">PREVIOUS</string>
+    <string name="select_the_mart_you_want_to_shop_at">Please select the mart you want to shop at</string>
 
 
 </resources>
