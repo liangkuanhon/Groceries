@@ -56,4 +56,7 @@ public class SupermarketAdapter extends RecyclerView.Adapter<SupermarketAdapter.
             supermarketName = itemView.findViewById(R.id.supermarket_name);  // Find the TextView for supermarket name
         }
     }
+
+
+
 }

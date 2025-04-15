@@ -10,7 +10,11 @@ import com.example.groceries.SupermarketGraph;
 import com.example.groceries.adapter.RouteAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+
+
+import android.os.Handler;
 import android.util.Log;
 
 
@@ -40,9 +44,12 @@ public class SupermarketMapFragment extends Fragment {
 
     private static final String ARG_GROUP_ID = "group_id";
     private static final String ARG_SUPERMARKET_NAME = "supermarket_name";
+    private static final String ARG_GROUP_NAME = "group_name";
 
     private String groupId;
+    private static String groupName;
     private String supermarketName;
+
 
     private List<String> currentRoute = new ArrayList<>();
     private int currentStepIndex = 0;
@@ -60,11 +67,12 @@ public class SupermarketMapFragment extends Fragment {
 
 
 
-    public static SupermarketMapFragment newInstance(String groupId, String supermarketName) {
+    public static SupermarketMapFragment newInstance(String groupId, String groupName, String supermarketName) {
         SupermarketMapFragment fragment = new SupermarketMapFragment();
         Bundle args = new Bundle();
         args.putString(ARG_GROUP_ID, groupId);
         args.putString(ARG_SUPERMARKET_NAME, supermarketName);
+        args.putString(ARG_GROUP_NAME, groupName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -75,6 +83,7 @@ public class SupermarketMapFragment extends Fragment {
         if (getArguments() != null) {
             groupId = getArguments().getString(ARG_GROUP_ID);
             supermarketName = getArguments().getString(ARG_SUPERMARKET_NAME);
+            groupName = getArguments().getString(ARG_GROUP_NAME);
         }
     }
 
@@ -88,65 +97,105 @@ public class SupermarketMapFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Load the map PNG dynamically
-        ImageView mapImage = view.findViewById(R.id.supermarket_map_image);
-        String imageName = "map_" + supermarketName.toLowerCase().replace(" ", "_");
-        int imageResId = getResources().getIdentifier(imageName, "drawable", requireContext().getPackageName());
-        if (imageResId != 0) {
-            mapImage.setImageResource(imageResId);
-        } else {
-            mapImage.setImageResource(R.drawable.add); //default image in case none was found
-            Toast.makeText(requireContext(), "Map not found for " + supermarketName, Toast.LENGTH_SHORT).show();
+        if (savedInstanceState != null) {
+            currentRoute = savedInstanceState.getStringArrayList("currentRoute");
+            currentStepIndex = savedInstanceState.getInt("currentStepIndex", 0);
+            originalItemNames = savedInstanceState.getStringArrayList("originalItemNames");
         }
 
-        // 2. Get shopping list from Firebase and trigger routing
-        FirebaseHelper.getGroupItems(groupId, new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<String> shoppingList = new ArrayList<>();
-                originalItemNames = new ArrayList<>(); // Ensure this is initialized correctly
+        view.findViewById(R.id.back_arrow).setOnClickListener(v ->{
+            requireActivity().getSupportFragmentManager().popBackStackImmediate();
+        });
 
-                for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
-                    String itemName = itemSnapshot.child("name").getValue(String.class);
-                    Boolean checked = itemSnapshot.child("checked").getValue(Boolean.class);
+        // If route is already available (i.e., restored from orientation), just show it
+        if (currentRoute != null && !currentRoute.isEmpty()) {
+            updateStepDisplay(
+                    view.findViewById(R.id.step_text),
+                    view.findViewById(R.id.item_hint_text)
+            );
 
-                    // Only include items that are not checked
-                    if (itemName != null && (checked == null || !checked)) {
-                        // Add the item to the originalItemNames
-                        originalItemNames.add(itemName);
+            view.findViewById(R.id.next_button).setOnClickListener(v -> {
+                if (currentStepIndex < currentRoute.size() - 1) {
+                    currentStepIndex++;
+                    updateStepDisplay(
+                            view.findViewById(R.id.step_text),
+                            view.findViewById(R.id.item_hint_text)
+                    );
+                }
+            });
 
-                        // Map the item to its category using the helper class
-                        String category = ItemCategoryMapper.getCategoryForItem(itemName);
+            view.findViewById(R.id.previous_button).setOnClickListener(v -> {
+                if (currentStepIndex > 0) {
+                    currentStepIndex--;
+                    updateStepDisplay(
+                            view.findViewById(R.id.step_text),
+                            view.findViewById(R.id.item_hint_text)
+                    );
+                }
+            });
 
-                        if (category != null) {
-                            shoppingList.add(category); // Add the category to the list
-                        } else {
-                            Log.e("ShoppingList", "No category found for item: " + itemName);
+        } else {
+
+            // 1. Load the map PNG dynamically
+            ImageView mapImage = view.findViewById(R.id.supermarket_map_image);
+            String imageName = "map_" + supermarketName.toLowerCase().replace(" ", "_");
+            int imageResId = getResources().getIdentifier(imageName, "drawable", requireContext().getPackageName());
+            if (imageResId != 0) {
+                mapImage.setImageResource(imageResId);
+            } else {
+                mapImage.setImageResource(R.drawable.add); //default image in case none was found
+                Toast.makeText(requireContext(), "Map not found for " + supermarketName, Toast.LENGTH_SHORT).show();
+            }
+
+            // 2. Get shopping list from Firebase and trigger routing
+            FirebaseHelper.getGroupItems(groupId, new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    List<String> shoppingList = new ArrayList<>();
+                    originalItemNames = new ArrayList<>(); // Ensure this is initialized correctly
+
+                    for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
+                        String itemName = itemSnapshot.child("name").getValue(String.class);
+                        Boolean checked = itemSnapshot.child("checked").getValue(Boolean.class);
+
+                        // Only include items that are not checked
+                        if (itemName != null && (checked == null || !checked)) {
+                            // Add the item to the originalItemNames
+                            originalItemNames.add(itemName);
+
+                            // Map the item to its category using the helper class
+                            String category = ItemCategoryMapper.getCategoryForItem(itemName);
+
+                            if (category != null) {
+                                shoppingList.add(category); // Add the category to the list
+                            } else {
+                                Log.e("ShoppingList", "No category found for item: " + itemName);
+                            }
                         }
                     }
-                }
 
-                Log.d("ShoppingList", "Shopping List with Categories: " + shoppingList);
+                    Log.d("ShoppingList", "Shopping List with Categories: " + shoppingList);
 
-                // 3. Create the graph for the selected supermarket
-                SupermarketGraph supermarketGraph = SupermarketFactory.getSupermarketGraph(supermarketName);
+                    // 3. Create the graph for the selected supermarket
+                    SupermarketGraph supermarketGraph = SupermarketFactory.getSupermarketGraph(supermarketName);
 
-                // Verify if categories exist in the graph
-                for (String category : shoppingList) {
-                    if (!supermarketGraph.containsNode(category)) {
-                        Log.e("ShoppingList", "Category not found in graph: " + category);
+                    // Verify if categories exist in the graph
+                    for (String category : shoppingList) {
+                        if (!supermarketGraph.containsNode(category)) {
+                            Log.e("ShoppingList", "Category not found in graph: " + category);
+                        }
                     }
+
+                    // Once the shopping list with categories is ready, run routing and display the result
+                    runRoutingAndShow(shoppingList, supermarketGraph);
                 }
 
-                // Once the shopping list with categories is ready, run routing and display the result
-                runRoutingAndShow(shoppingList, supermarketGraph);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(requireContext(), "Failed to load items from Firebase.", Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(requireContext(), "Failed to load items from Firebase.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     private void updateStepDisplay(TextView stepText, TextView hintText) {
@@ -206,6 +255,12 @@ public class SupermarketMapFragment extends Fragment {
             if (currentStepIndex < currentRoute.size() - 1) {
                 currentStepIndex++;
                 updateStepDisplay(stepText, hintText);
+                if (currentStepIndex == currentRoute.size() - 1) {
+                    nextButton.setText("Finish");
+                }
+            }
+            else {
+                navigateToGroupDetailsFragment(groupId, groupName);
             }
         });
 
@@ -215,6 +270,7 @@ public class SupermarketMapFragment extends Fragment {
             if (currentStepIndex > 0) {
                 currentStepIndex--;
                 updateStepDisplay(stepText, hintText);
+                nextButton.setText("Next");
 
                 // Re-show hint if this step had one originally
                 String stepLocation = currentRoute.get(currentStepIndex);
@@ -237,5 +293,25 @@ public class SupermarketMapFragment extends Fragment {
         });
 
     }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList("currentRoute", new ArrayList<>(currentRoute));
+        outState.putInt("currentStepIndex", currentStepIndex);
+        outState.putStringArrayList("originalItemNames", new ArrayList<>(originalItemNames));
+    }
+
+    private void navigateToGroupDetailsFragment(String groupId, String groupName) {
+        SingleGroupFragment fragment = SingleGroupFragment.newInstance(groupId, groupName);
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_frame, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+
+
 
 }
