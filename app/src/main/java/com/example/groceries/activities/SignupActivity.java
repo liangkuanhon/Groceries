@@ -35,10 +35,10 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         initialise();
-        setupEdgeToEdge();
         setupClickListeners();
     }
 
+    // setup firebase, viewbinding, ui and initialise navigation helper
     private void initialise(){
         auth = FirebaseAuth.getInstance();
         b = ActivitySignupBinding.inflate(getLayoutInflater());
@@ -46,21 +46,13 @@ public class SignupActivity extends AppCompatActivity {
         navigationHelper = new NavigationHelper(this);
     }
 
-    // set up UI
-    private void setupEdgeToEdge(){
-        EdgeToEdge.enable(this);
-        ViewCompat.setOnApplyWindowInsetsListener(b.main, (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-    }
-
+    // assigning methods to handle button clicks
     private void setupClickListeners(){
         b.loginLink.setOnClickListener(view -> navigateToLogin());
         b.signupButton.setOnClickListener(view -> handleSignUp());
     }
 
+    // convert the inputs to strings, if inputs are valid check if username exist otherwise create an account
     private void handleSignUp() {
         String email = b.signupEmail.getText().toString().trim();
         String username = b.signupUsername.getText().toString().trim();
@@ -70,12 +62,11 @@ public class SignupActivity extends AppCompatActivity {
         if (!validateInputs(email, username, password, reconfirmPassword)) {
             return;
         }
-
         checkUsernameAndRegister(username, email, password);
     }
 
     private boolean validateInputs(String email, String username, String password, String reconfirmPassword) {
-        // Validate email
+        // check if email input is valid
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             b.signupEmail.setError("Please enter a valid email address");
             b.signupEmail.requestFocus();
@@ -115,8 +106,10 @@ public class SignupActivity extends AppCompatActivity {
         return true;
     }
 
+    // check if username exists in the database, register if it doesnt exist
     private void checkUsernameAndRegister(String username, String email, String password) {
-        FirebaseHelper.checkUsernameExists(username, new ValueEventListener() {
+        FirebaseHelper.checkUsernameExists(username, new ValueEventListener() { // listens for changes to data at a specific database location
+            // triggers when the listener is attached, and whenever data at the watched location changes
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -127,12 +120,14 @@ public class SignupActivity extends AppCompatActivity {
                 }
             }
 
+            // triggered during network failures, invalid queries etc
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 showError("Failed to check username availability");
             }
         });
     }
+
 
     private void registerNewUser(String email, String password, String username) {
         auth.createUserWithEmailAndPassword(email, password)
