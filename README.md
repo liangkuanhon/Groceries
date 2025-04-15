@@ -10,16 +10,16 @@ view them immediately.
 
 ## Getting Started
 
-* Clone the Repository
+Clone the Repository
    ```bash
    git clone https://github.com/liangkuanhon/Groceries.git
-* Open in Android Studio
+Open in Android Studio
     *Launch Android Studio
     *Click on File>Open
-* Build the project
+Build the project
     *Android Studio will automatically sync the gradle files
     *If gradle files are not synced, click on File > Sync Project With Gradle Files (Shortcut: Ctrl + Shift + O)
-* Run the application
+Run the application
     *Connect an android device via usb cable or install an emulator
     *Click the green run button at the top
 
