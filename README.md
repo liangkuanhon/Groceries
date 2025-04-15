@@ -27,12 +27,27 @@ view them immediately.
   * Connect an android device via usb cable or install an emulator
   * Click the green run button at the top
 
+## Known Issues / Crashes
+* **Orientation-related crashes**  
+  Certain activities or fragments may crash when the screen orientation changes.  
+  *Workaround:* Lock the screen orientation while using the app.
+
+* **Mismatched routing after navigating back**  
+  Some grocery items may appear out of order or incorrectly routed if the Android back button is used during routing.  
+  *Workaround:* Use the in-app navigation buttons instead for a clean transition.
+
+* **Navigation bar layout inconsistencies**  
+  On some devices, the navigation bar may appear cut off or not fixed to the bottom. This is suspected to be an issue with XML layout constraints and device-specific behaviors.
+
+
 ## Built With
 
-* Built in **Java** using **Android Studio**
-* Realtime syncing via **Firebase Realtime Database**
-* UI designed with **XML**
-* In-store routing powered by **Breadth-First Search (BFS)**
+* **Java** — Primary language for core app development
+* **Android Studio** — IDE used for building and testing
+* **Firebase Realtime Database** — Enables real-time syncing across devices
+* **XML** — Used for designing the UI layouts
+* **Breadth-First Search (BFS)** — Algorithm used for optimized in-store routing
+
 
 ## Contributors
 
