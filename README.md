@@ -39,7 +39,7 @@ view them immediately.
 * **Do Huy Thoai** – Backend Development Lead, Firebase Integration, and Shopping Route Optimization
 * **Jiang Wen Miao** – Backend Development, Infographics
 * **Liang Kuan Hon** – Frontend Development Lead, Firebase Integration, and UI Design Lead
-* **Vivianna Ong** – Frontend Development, UI Design Assets, Infographics, and Route Optimization
+* **Viviana Ong** – Frontend Development, UI Design Assets, Infographics, and Route Optimization
 * **Lee Sin Rong** – Frontend Development, UI Design, and Custom Icons
 
 
