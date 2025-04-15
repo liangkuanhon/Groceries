@@ -31,18 +31,18 @@ public class LoginActivity extends AppCompatActivity {
 
     private NavigationHelper navigationHelper;
     private FirebaseAuth auth;
-    private ActivityLoginBinding b; // Declare the b variable
+    private ActivityLoginBinding b;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         initialise();
-        setupEdgeToEdge();
         setupClickListeners();
 
     }
 
+    // setup firebase, viewbinding, ui and initialise navigation helper
     private void initialise(){
         auth = FirebaseAuth.getInstance();
         b = ActivityLoginBinding.inflate(getLayoutInflater());
@@ -50,15 +50,7 @@ public class LoginActivity extends AppCompatActivity {
         navigationHelper = new NavigationHelper(this);
     }
 
-    private void setupEdgeToEdge(){
-        EdgeToEdge.enable(this);
-        ViewCompat.setOnApplyWindowInsetsListener(b.main, (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-    }
-
+    // assign methods to handle click logic
     private void setupClickListeners(){
         b.loginButton.setOnClickListener(view -> handleLogin());
         b.signupButton.setOnClickListener(view -> navigateToSignup());
@@ -69,20 +61,21 @@ public class LoginActivity extends AppCompatActivity {
             String input = b.loginInput.getText().toString().trim();
             String password = b.loginPassword.getText().toString().trim();
 
+            // check which method to login with, using email or username
             if (isValidEmail(input)) {
-                // If input is an email, log in directly
                 loginWithEmail(input, password);
             } else {
-                // If input is a username, look up the email in the database
                 loginWithUsername(input, password);
             }
         }
     }
 
+    // use Patterns.EMAIL_ADDRESS to check if input is a valid email format
     private boolean isValidEmail(String input) {
         return Patterns.EMAIL_ADDRESS.matcher(input).matches();
     }
 
+    // check whether username or email is entered
     private Boolean ValidInput() {
         String input = b.loginInput.getText().toString();
         if (input.isEmpty()) {
@@ -95,6 +88,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    // check whether password is entered
     private Boolean ValidPassword() {
         String password = b.loginPassword.getText().toString();
         if (password.isEmpty()) {
@@ -107,11 +101,11 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    // use firebase authenticator to login
     private void loginWithEmail(String email, String password) {
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Login successful
                         FirebaseUser user = auth.getCurrentUser();
                         if (user != null) {
                             // Save user email in SharedPreferences for auto-login
@@ -121,9 +115,7 @@ public class LoginActivity extends AppCompatActivity {
                             editor.apply();
 
                             // Navigate to MainActivity
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
+                            navigationHelper.navigateToActivityClearStack(MainActivity.class);
                         }
                     } else {
                         // Login failed
@@ -132,6 +124,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+    // check if username exists in the database, then fetch the associated email and log in with it
     private void loginWithUsername(String username, String password) {
         FirebaseHelper.checkUsernameExists(username, new ValueEventListener() {
             @Override
@@ -181,9 +174,7 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser currentUser = auth.getCurrentUser();
         if (currentUser != null) {
             // If the user is already logged in, skip LoginActivity and go to MainActivity
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish(); // Prevent going back to LoginActivity
+            navigationHelper.navigateToActivityClearStack(MainActivity.class);
         }
     }
 }

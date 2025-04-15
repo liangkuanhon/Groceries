@@ -27,7 +27,7 @@ import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActivityMainBinding binding;
+    private ActivityMainBinding b;
     private AllGroupFragment groupsFragment = new AllGroupFragment();
     private ProfileFragment profileFragment = new ProfileFragment();
 
@@ -61,11 +61,11 @@ public class MainActivity extends AppCompatActivity {
         // Test code ===============
 
         // Initialize View Binding
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        b = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(b.getRoot());
 
         EdgeToEdge.enable(this);
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(b.main, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, groupsFragment).commit();
 
         // Bottom Navigation setup with 3 items
-        BottomNavigationView bottomNavigationView = binding.mainBottomNavigation;
+        BottomNavigationView bottomNavigationView = b.mainBottomNavigation;
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

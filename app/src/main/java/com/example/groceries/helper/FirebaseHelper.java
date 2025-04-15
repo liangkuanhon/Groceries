@@ -1,5 +1,7 @@
 package com.example.groceries.helper;
 
+import android.provider.ContactsContract;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -155,6 +157,10 @@ public class FirebaseHelper {
 
     public static void removeGroupItem(String groupId, String itemId, DatabaseReference.CompletionListener listener) {
         groupItemsReference(groupId).child(itemId).removeValue(listener);
+    }
+
+    public static void removeAllGroupItem(String groupId, DatabaseReference.CompletionListener listener){
+        groupItemsReference(groupId).removeValue(listener);
     }
 
     public static void getGroupMembers(String groupId, ValueEventListener listener) {
