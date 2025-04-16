@@ -18,11 +18,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.groceries.R;
-import com.example.groceries.activities.CategoryActivity;
-import com.example.groceries.activities.CreateGroupActivity;
-import com.example.groceries.activities.GroceryListActivity;
-import com.example.groceries.activities.GroupViewActivity;
-import com.example.groceries.activities.MainActivity;
 import com.example.groceries.databinding.FragmentProfileBinding; // Import the generated binding class
 import com.example.groceries.activities.LoginActivity;
 import com.example.groceries.helper.FirebaseHelper;

@@ -53,9 +53,5 @@ public class CategoryActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        findViewById(R.id.viewGroceryList).setOnClickListener(v -> {
-            startActivity(new Intent(this, GroceryListActivity.class));
-        });
     }
 }

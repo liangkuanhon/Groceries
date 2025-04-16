@@ -27,14 +27,24 @@ public class ItemsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        initialise();
+        setupClickListeners();
+        loadData();
+    }
+
+    private void initialise(){
         b = ActivityItemsBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
-        EdgeToEdge.enable(this);
+    }
 
+    private void setupClickListeners(){
         b.backArrow.setOnClickListener(v -> {
             finish();
         });
+    }
 
+    private void loadData(){
         // Get the selected category from intent
         String category = getIntent().getStringExtra("CATEGORY");
         String groupId = getIntent().getStringExtra("GROUP_ID");
@@ -45,8 +55,8 @@ public class ItemsActivity extends AppCompatActivity {
         Map<String, Integer> items = GroceryData.getItemsForCategory(category);
 
         // Set up the GridView
-
         ItemAdapter adapter = new ItemAdapter(this, items, groupId);
         b.itemsGridView.setAdapter(adapter);
     }
+
 }

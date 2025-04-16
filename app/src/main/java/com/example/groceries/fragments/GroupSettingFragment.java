@@ -17,10 +17,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.groceries.R;
 import com.example.groceries.User;
 import com.example.groceries.adapter.MemberAdapter;
 import com.example.groceries.databinding.FragmentGroupSettingBinding;
 import com.example.groceries.helper.FirebaseHelper;
+import com.example.groceries.helper.NavigationHelper;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -32,6 +34,7 @@ import java.util.Map;
 
 public class GroupSettingFragment extends Fragment {
 
+    private NavigationHelper navigationHelper;
     private FragmentGroupSettingBinding b;
     private static final String ARG_GROUP_NAME = "group_name";
     private static final String ARG_GROUP_ID = "group_id";
@@ -71,10 +74,15 @@ public class GroupSettingFragment extends Fragment {
 
         b.groupName.setText(groupName);
 
+        initialise();
         setupRecyclerView();
         loadGroupMembers();
         setupClickListeners();
 
+    }
+
+    private void initialise(){
+        navigationHelper = new NavigationHelper(requireActivity(), R.id.main_frame);
     }
 
     private void setupClickListeners() {
@@ -138,15 +146,15 @@ public class GroupSettingFragment extends Fragment {
         boolean isCurrentUser = member.getUid().equals(FirebaseHelper.getCurrentUserId());
 
         AlertDialog alertDialog = new  AlertDialog.Builder(requireContext())
-            .setTitle(isCurrentUser ? "Leave Group?" : "Remove Member")
-            .setMessage(isCurrentUser
-                    ? "Are you sure you want to leave this group?"
-                    : "Are you sure you want to remove this member?")
-            .setPositiveButton(isCurrentUser ? "Leave" : "Remove", (dialog, which) -> {
-                removeUserFromGroup(member.getUid(), isCurrentUser);
-            })
-            .setNegativeButton("Cancel", null)
-            .create();
+                .setTitle(isCurrentUser ? "Leave Group?" : "Remove Member")
+                .setMessage(isCurrentUser
+                        ? "Are you sure you want to leave this group?"
+                        : "Are you sure you want to remove this member?")
+                .setPositiveButton(isCurrentUser ? "Leave" : "Remove", (dialog, which) -> {
+                    removeUserFromGroup(member.getUid(), isCurrentUser);
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
 
         alertDialog.setOnShowListener(d -> {
             Button positiveButton = ((AlertDialog) d).getButton(AlertDialog.BUTTON_POSITIVE);
@@ -160,26 +168,49 @@ public class GroupSettingFragment extends Fragment {
 
     private void removeUserFromGroup(String userId, boolean isCurrentUser) {
         FirebaseHelper.removeGroupMember(groupId, userId, (error, ref) -> {
-            if (error == null) {
-                FirebaseHelper.removeGroupFromUser(userId, groupId, (userError, userRef) -> {
-                    if (userError == null) {
-                        String message = isCurrentUser ? "You left the group" : "Member removed";
-                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            if (error != null) {
+                showError("Failed to " + (isCurrentUser ? "leave" : "remove") + ": " + error.getMessage());
+                return;
+            }
 
-                        if (isCurrentUser) {
-                            requireActivity().onBackPressed();
+
+                // After successful removal, check if group is now empty
+                FirebaseHelper.getGroupMembers(groupId, new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.getChildrenCount() == 0) {
+                            // Group is empty - delete it
+                            FirebaseHelper.deleteGroup(groupId, (error, ref) -> {
+                                if (error == null) {
+                                    showMessage(isCurrentUser, true);
+                                    navigationHelper.navigateToFragment(new AllGroupFragment());
+                                } else {
+                                    showError("Failed to delete group: " + error.getMessage());
+                                }
+                            });
                         } else {
-                            loadGroupMembers();
+                            showMessage(isCurrentUser, false);
+                            if (isCurrentUser) {
+                                navigationHelper.navigateToFragment(new AllGroupFragment());
+                            } else {
+                                loadGroupMembers();
+                            }
                         }
-                    } else {
-                        showError("Failed to update user: " + userError.getMessage());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        showError("Failed to check members: " + error.getMessage());
                     }
                 });
-            } else {
-                showError("Failed to " + (isCurrentUser ? "leave group" : "remove member") +
-                        ": " + error.getMessage());
-            }
         });
+    }
+
+    private void showMessage(boolean isCurrentUser, boolean groupDeleted) {
+        String message = groupDeleted
+                ? isCurrentUser ? "You left - group deleted" : "Member removed - group deleted"
+                : isCurrentUser ? "You left the group" : "Member removed";
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     private void showAddMemberDialog() {
@@ -230,22 +261,14 @@ public class GroupSettingFragment extends Fragment {
         });
     }
 
+    // add user to group in the database
     private void addUserToGroup(String userId) {
-        // Add user to group members using FirebaseHelper
-        Map<String, Object> groupData = new HashMap<>();
-        groupData.put("members/" + userId, true); // Add to members list
-
-        FirebaseHelper.createGroup(groupId, groupData, (error, ref) -> {
+        // Use the simpler addGroupMember method
+        FirebaseHelper.addGroupMember(groupId, userId, (error, ref) -> {
             if (error == null) {
-                // Also add group to user's group list
-                FirebaseHelper.addGroupToUser(userId, groupId, (userError, userRef) -> {
-                    if (userError == null) {
-                        Toast.makeText(requireContext(), "Member added successfully", Toast.LENGTH_SHORT).show();
-                        loadGroupMembers();
-                    } else {
-                        Toast.makeText(requireContext(), "Failed to update user's groups: " + userError.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                Toast.makeText(requireContext(), "Member added successfully", Toast.LENGTH_SHORT).show();
+                loadGroupMembers(); // Refresh the members list
+
             } else {
                 Toast.makeText(requireContext(), "Failed to add member: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }

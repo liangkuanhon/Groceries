@@ -15,6 +15,7 @@ public class SupermarketFactory {
     static {
         // Manual registration of supermarket maps
         registerSupermarket("NTUC Simei", NTUCSimeiGraph::new);
+        registerSupermarket("NTUC Expo", NTUCExpoGraph::new);
     }
 
     public static void registerSupermarket(String name, Supplier<SupermarketGraph> supplier) {

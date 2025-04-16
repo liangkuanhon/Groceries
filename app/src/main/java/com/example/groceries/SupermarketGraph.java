@@ -20,5 +20,15 @@ public class SupermarketGraph implements Graph {
         return adjacencyList.getOrDefault(node, new ArrayList<>());
     }
 
+    // Add getGraph() method to expose the adjacency list
+    public Map<String, List<String>> getGraph() {
+        return adjacencyList;
+    }
+
+    //
+    public boolean containsNode(String nodeName) {
+        return adjacencyList.containsKey(nodeName);
+    }
+
 
 }

@@ -14,12 +14,12 @@ public class NavigationHelper {
     private FragmentManager fragmentManager;
     private int fragmentContainerId;
 
-    // Constructor for Activity-level navigation
+    // used for activity to activity navigation
     public NavigationHelper(Context context) {
         this.context = context;
     }
 
-    // Constructor for Fragment-level navigation
+    // used when fragment transactions are needed
     public NavigationHelper(FragmentActivity activity, int fragmentContainerId) {
         this.context = activity;
         this.fragmentManager = activity.getSupportFragmentManager();
@@ -28,17 +28,21 @@ public class NavigationHelper {
 
     // ==================== ACTIVITY NAVIGATION ====================
 
+    // opens a new activity
     public void navigateToActivity(Class<?> targetActivity) {
         context.startActivity(new Intent(context, targetActivity));
     }
 
+    // opens a new activity and clearing the back stack; prevents users from returning to the previous screen
+    // and also pass an extra string to the next activity
     public void navigateToActivityWithExtra(Class<?> targetActivity, String extraKey, String extraValue) {
         Intent intent = new Intent(context, targetActivity);
         intent.putExtra(extraKey, extraValue);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
     }
 
-    // prevent user from going back
+    // prevent user from going back after transaction to the next activity
     public void navigateToActivityClearStack(Class<?> targetActivity) {
         Intent intent = new Intent(context, targetActivity);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
