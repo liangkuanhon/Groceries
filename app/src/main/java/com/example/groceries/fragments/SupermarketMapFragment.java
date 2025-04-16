@@ -13,10 +13,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
-
 import android.os.Handler;
 import android.util.Log;
-
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,7 +24,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.Button;
 import android.widget.TextView;
-
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,7 +36,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
-
 public class SupermarketMapFragment extends Fragment {
 
     private static final String ARG_GROUP_ID = "group_id";
@@ -50,7 +46,6 @@ public class SupermarketMapFragment extends Fragment {
     private static String groupName;
     private String supermarketName;
 
-
     private List<String> currentRoute = new ArrayList<>();
     private int currentStepIndex = 0;
 
@@ -60,12 +55,8 @@ public class SupermarketMapFragment extends Fragment {
     //used for filtering items
     private List<String> originalItemNames;
 
-
     //to prevent showing "Your shopping list items are" multiple times
     private Set<String> categoriesWithHints = new HashSet<>();
-
-
-
 
     public static SupermarketMapFragment newInstance(String groupId, String groupName, String supermarketName) {
         SupermarketMapFragment fragment = new SupermarketMapFragment();
@@ -103,7 +94,7 @@ public class SupermarketMapFragment extends Fragment {
             originalItemNames = savedInstanceState.getStringArrayList("originalItemNames");
         }
 
-        view.findViewById(R.id.back_arrow).setOnClickListener(v ->{
+        view.findViewById(R.id.back_arrow).setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager().popBackStackImmediate();
         });
 
@@ -135,7 +126,6 @@ public class SupermarketMapFragment extends Fragment {
             });
 
         } else {
-
             // 1. Load the map PNG dynamically
             ImageView mapImage = view.findViewById(R.id.supermarket_map_image);
             String imageName = "map_" + supermarketName.toLowerCase().replace(" ", "_");
@@ -187,7 +177,12 @@ public class SupermarketMapFragment extends Fragment {
                     }
 
                     // Once the shopping list with categories is ready, run routing and display the result
-                    runRoutingAndShow(shoppingList, supermarketGraph);
+                    View fragmentView = getView();
+                    if (fragmentView != null) {
+                        runRoutingAndShow(shoppingList, supermarketGraph, fragmentView);
+                    } else {
+                        Log.e("SupermarketMapFragment", "Fragment view is null");
+                    }
                 }
 
                 @Override
@@ -226,28 +221,21 @@ public class SupermarketMapFragment extends Fragment {
         } else {
             hintText.setVisibility(View.GONE);
         }
-
     }
 
-
-
-
-
-
-    private void runRoutingAndShow(List<String> shoppingList, SupermarketGraph supermarketGraph) {
+    private void runRoutingAndShow(List<String> shoppingList, SupermarketGraph supermarketGraph, View view) {
         BFSRouter router = new BFSRouter(supermarketGraph);
         ArrayList<String> shoppingListCopy = new ArrayList<>(shoppingList);
         List<String> optimalRoute = router.greedyBFSRouting(shoppingListCopy);
         originalShoppingList = new ArrayList<>(shoppingList);
 
-
         currentRoute = optimalRoute;
         currentStepIndex = 0;
 
-        TextView stepText = requireView().findViewById(R.id.step_text);
-        TextView hintText = requireView().findViewById(R.id.item_hint_text);
-        Button nextButton = requireView().findViewById(R.id.next_button);
-        Button previousButton = requireView().findViewById(R.id.previous_button);
+        TextView stepText = view.findViewById(R.id.step_text);
+        TextView hintText = view.findViewById(R.id.item_hint_text);
+        Button nextButton = view.findViewById(R.id.next_button);
+        Button previousButton = view.findViewById(R.id.previous_button);
 
         updateStepDisplay(stepText, hintText); // Show the first step
 
@@ -264,15 +252,12 @@ public class SupermarketMapFragment extends Fragment {
             }
         });
 
-
-        //Show hint again if backtrack logic
         previousButton.setOnClickListener(v -> {
             if (currentStepIndex > 0) {
                 currentStepIndex--;
                 updateStepDisplay(stepText, hintText);
                 nextButton.setText("Next");
 
-                // Re-show hint if this step had one originally
                 String stepLocation = currentRoute.get(currentStepIndex);
                 if (categoriesWithHints.contains(stepLocation)) {
                     List<String> allItemsAtCategory = ItemCategoryMapper.getItemsAtCategory(stepLocation);
@@ -291,7 +276,6 @@ public class SupermarketMapFragment extends Fragment {
                 }
             }
         });
-
     }
 
     @Override
@@ -310,8 +294,4 @@ public class SupermarketMapFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
-
-
-
-
 }
