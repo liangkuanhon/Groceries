@@ -13,10 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.example.groceries.GroceryData;
-import com.example.groceries.R;
 import com.example.groceries.activities.ItemsActivity;
 import com.example.groceries.databinding.FragmentCategoryBinding;
-import com.example.groceries.databinding.FragmentSingleGroupBinding;
 
 import java.util.Arrays;
 

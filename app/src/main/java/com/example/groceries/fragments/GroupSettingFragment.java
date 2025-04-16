@@ -78,7 +78,6 @@ public class GroupSettingFragment extends Fragment {
         setupRecyclerView();
         loadGroupMembers();
         setupClickListeners();
-
     }
 
     private void initialise(){
@@ -122,7 +121,6 @@ public class GroupSettingFragment extends Fragment {
                                 adapter.notifyDataSetChanged();
                             }
                         }
-
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
                             Toast.makeText(requireContext(),
@@ -172,37 +170,35 @@ public class GroupSettingFragment extends Fragment {
                 showError("Failed to " + (isCurrentUser ? "leave" : "remove") + ": " + error.getMessage());
                 return;
             }
-
-
-                // After successful removal, check if group is now empty
-                FirebaseHelper.getGroupMembers(groupId, new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.getChildrenCount() == 0) {
-                            // Group is empty - delete it
-                            FirebaseHelper.deleteGroup(groupId, (error, ref) -> {
-                                if (error == null) {
-                                    showMessage(isCurrentUser, true);
-                                    navigationHelper.navigateToFragment(new AllGroupFragment());
-                                } else {
-                                    showError("Failed to delete group: " + error.getMessage());
-                                }
-                            });
-                        } else {
-                            showMessage(isCurrentUser, false);
-                            if (isCurrentUser) {
+            // After successful removal, check if group is now empty
+            FirebaseHelper.getGroupMembers(groupId, new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.getChildrenCount() == 0) {
+                        // Group is empty - delete it
+                        FirebaseHelper.deleteGroup(groupId, (error, ref) -> {
+                            if (error == null) {
+                                showMessage(isCurrentUser, true);
                                 navigationHelper.navigateToFragment(new AllGroupFragment());
                             } else {
-                                loadGroupMembers();
+                                showError("Failed to delete group: " + error.getMessage());
                             }
+                        });
+                    } else {
+                        showMessage(isCurrentUser, false);
+                        if (isCurrentUser) {
+                            navigationHelper.navigateToFragment(new AllGroupFragment());
+                        } else {
+                            loadGroupMembers();
                         }
                     }
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        showError("Failed to check members: " + error.getMessage());
-                    }
-                });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    showError("Failed to check members: " + error.getMessage());
+                }
+            });
         });
     }
 

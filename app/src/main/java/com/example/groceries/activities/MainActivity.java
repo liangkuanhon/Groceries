@@ -32,13 +32,13 @@ public class MainActivity extends AppCompatActivity {
     private AllGroupFragment groupsFragment = new AllGroupFragment();
     private ProfileFragment profileFragment = new ProfileFragment();
     private NavigationHelper navigationHelper;
+    private boolean isInitialised = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         initialise();
-        handleIntent(getIntent());
         setupNavigation();
     }
 
@@ -47,6 +47,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(b.getRoot());
         getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, groupsFragment).commit();
         navigationHelper = new NavigationHelper(this);
+        isInitialised = true;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (isInitialised) {
+            handleIntent(intent);
+        }
     }
 
     private void setupNavigation(){
@@ -67,12 +76,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleIntent(intent);
     }
 
     private void handleIntent(Intent intent) {

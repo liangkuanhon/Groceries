@@ -97,7 +97,7 @@ public class SingleGroupFragment extends Fragment {
         b.remove.setOnClickListener(v -> removeAllItems());
 
         b.checkout.setOnClickListener(v -> {
-            SupermarketListFragment supermarketFragment = SupermarketListFragment.newInstance(groupId);
+            SupermarketListFragment supermarketFragment = SupermarketListFragment.newInstance(groupId, groupName);
             navigationHelper.navigateToFragment(supermarketFragment);
         });
     }
